@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis - Finance LLM Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin: 2rem auto;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+        }
+        .loading {
+            display: none;
+        }
+        .result-section {
+            display: none;
+        }
+        .section-title {
+            color: #43e97b;
+            font-weight: 600;
+        }
+        .back-btn {
+            background: #6c757d;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+        }
+        .sentiment-meter {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
+            height: 20px;
+            border-radius: 10px;
+            position: relative;
+            margin: 1rem 0;
+        }
+        .sentiment-indicator {
+            position: absolute;
+            top: -5px;
+            width: 10px;
+            height: 30px;
+            background: #333;
+            border-radius: 5px;
+            transition: left 0.5s ease;
+        }
+        .phrase-tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 15px;
+            margin: 0.25rem;
+            font-size: 0.875rem;
+        }
+        .insight-card {
+            border-left: 4px solid #43e97b;
+            background: #f8f9fa;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-brain text-primary me-2"></i>
+                        Sentiment Analysis
+                    </h1>
+                    <p class="text-muted">AI-powered text sentiment analysis and insights</p>
+                </div>
+                <a href="/" class="btn back-btn text-white">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+
+            <!-- Input Section -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-edit me-2"></i>Text Analysis
+                </h4>
+                <div class="mb-3">
+                    <label for="text" class="form-label">Enter text to analyze</label>
+                    <textarea class="form-control" id="text" rows="6" placeholder="Enter any text, news article, social media post, or financial report for sentiment analysis..."></textarea>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">Character count: <span id="charCount">0</span></small>
+                    <button class="btn btn-primary" onclick="analyzeSentiment()">
+                        <i class="fas fa-brain me-2"></i>Analyze Sentiment
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="loading text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Analyzing sentiment... Please wait.</p>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section">
+                <div class="section-card">
+                    <h4 class="section-title mb-3">
+                        <i class="fas fa-chart-bar me-2"></i>Analysis Results
+                    </h4>
+                    <div id="results-content"></div>
+                </div>
+            </div>
+
+            <!-- Sample Texts -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Sample Texts
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Positive Example:</h6>
+                        <p class="text-muted small">"Apple's latest earnings report exceeded expectations with strong iPhone sales and growing services revenue. The company's innovative approach continues to drive shareholder value."</p>
+                        <button class="btn btn-sm btn-outline-success" onclick="loadSample('positive')">Try This</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Negative Example:</h6>
+                        <p class="text-muted small">"The company's disappointing quarterly results and declining market share have raised concerns among investors. Management's strategy appears to be failing."</p>
+                        <button class="btn btn-sm btn-outline-danger" onclick="loadSample('negative')">Try This</button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Neutral Example:</h6>
+                        <p class="text-muted small">"The stock market showed mixed results today with technology stocks gaining while energy stocks declined. Trading volume was average."</p>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="loadSample('neutral')">Try This</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Financial News:</h6>
+                        <p class="text-muted small">"Federal Reserve announces new interest rate policy. Markets react with cautious optimism as inflation concerns persist."</p>
+                        <button class="btn btn-sm btn-outline-info" onclick="loadSample('news')">Try This</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-cogs me-2"></i>Analysis Features
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Sentiment polarity analysis
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Subjectivity assessment
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Key phrase extraction
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                AI-powered insights
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Real-time analysis
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Multiple text formats
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Character counter
+        document.getElementById('text').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        async function analyzeSentiment() {
+            const text = document.getElementById('text').value.trim();
+            
+            if (!text) {
+                alert('Please enter some text to analyze');
+                return;
+            }
+
+            // Show loading
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.result-section').style.display = 'none';
+
+            try {
+                const response = await fetch('/analyze-sentiment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    throw new Error(data.error || 'Analysis failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                document.querySelector('.loading').style.display = 'none';
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results-content');
+            
+            // Calculate sentiment position (0 to 100)
+            const sentimentPosition = ((data.sentiment_score + 1) / 2) * 100;
+            
+            let html = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Sentiment analysis completed successfully!
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-chart-pie me-2"></i>Sentiment Overview
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${data.sentiment}</h5>
+                                <p class="card-text">
+                                    <strong>Sentiment Score:</strong> ${data.sentiment_score}<br>
+                                    <strong>Subjectivity:</strong> ${data.subjectivity_score}<br>
+                                    <strong>Confidence:</strong> ${Math.abs(data.sentiment_score * 100).toFixed(1)}%
+                                </p>
+                                
+                                <div class="sentiment-meter">
+                                    <div class="sentiment-indicator" style="left: ${sentimentPosition}%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small>Negative</small>
+                                    <small>Neutral</small>
+                                    <small>Positive</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <i class="fas fa-tags me-2"></i>Key Phrases
+                            </div>
+                            <div class="card-body">
+                                ${data.key_phrases.map(phrase => `
+                                    <span class="phrase-tag">${phrase}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-lightbulb me-2"></i>AI Insights
+                            </div>
+                            <div class="card-body">
+                                ${data.insights.map(insight => `
+                                    <div class="insight-card">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        ${insight}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-info-circle me-2"></i>Analysis Details
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Text Length:</strong> ${document.getElementById('text').value.length} characters</p>
+                                <p><strong>Word Count:</strong> ${document.getElementById('text').value.split(' ').length} words</p>
+                                <p><strong>Analysis Time:</strong> < 1 second</p>
+                                <p><strong>Model:</strong> TextBlob NLP</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <i class="fas fa-chart-line me-2"></i>Sentiment Distribution
+                            </div>
+                            <div class="card-body">
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-danger" style="width: ${Math.max(0, -data.sentiment_score * 50)}%">Negative</div>
+                                    <div class="progress-bar bg-warning" style="width: ${Math.max(0, (1 - Math.abs(data.sentiment_score)) * 50)}%">Neutral</div>
+                                    <div class="progress-bar bg-success" style="width: ${Math.max(0, data.sentiment_score * 50)}%">Positive</div>
+                                </div>
+                                <small class="text-muted">Sentiment distribution across the analyzed text</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+            document.querySelector('.result-section').style.display = 'block';
+        }
+
+        function loadSample(type) {
+            const samples = {
+                positive: "Apple's latest earnings report exceeded expectations with strong iPhone sales and growing services revenue. The company's innovative approach continues to drive shareholder value.",
+                negative: "The company's disappointing quarterly results and declining market share have raised concerns among investors. Management's strategy appears to be failing.",
+                neutral: "The stock market showed mixed results today with technology stocks gaining while energy stocks declined. Trading volume was average.",
+                news: "Federal Reserve announces new interest rate policy. Markets react with cautious optimism as inflation concerns persist."
+            };
+            
+            document.getElementById('text').value = samples[type];
+            document.getElementById('charCount').textContent = samples[type].length;
+        }
+
+        // Enter key support (Ctrl+Enter for new line, Enter for analysis)
+        document.getElementById('text').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.ctrlKey) {
+                e.preventDefault();
+                analyzeSentiment();
+            }
+        });
+    </script>
+</body>
+</html> 

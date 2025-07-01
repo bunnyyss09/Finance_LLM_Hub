@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Parser - Finance LLM Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin: 2rem auto;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+        }
+        .loading {
+            display: none;
+        }
+        .result-section {
+            display: none;
+        }
+        .section-title {
+            color: #667eea;
+            font-weight: 600;
+        }
+        .back-btn {
+            background: #6c757d;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+        }
+        .chunk-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+        .score-badge {
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.95rem;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-file-alt text-primary me-2"></i>
+                        Document Parser
+                    </h1>
+                    <p class="text-muted">Upload a document, then ask questions to retrieve the most relevant parts (RAG)</p>
+                </div>
+                <a href="/" class="btn back-btn text-white">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="section-card mb-4">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-upload me-2"></i>Upload Document
+                </h4>
+                <div id="sessionInfo" class="mb-3" style="display:none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <span id="sessionInfoText"></span>
+                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="clearSession()">
+                            <i class="fas fa-trash me-1"></i>Clear
+                        </button>
+                    </div>
+                </div>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="row align-items-end">
+                        <div class="col-md-8">
+                            <input type="file" class="form-control" id="fileInput" name="file" accept=".txt,.pdf,.docx,.html" required>
+                            <div class="form-text">Supported formats: PDF, DOCX, TXT, HTML (Max 50MB)</div>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100" id="uploadBtn">
+                                <i class="fas fa-upload me-2"></i>Upload & Index
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div id="uploadStatus" class="mt-3"></div>
+            </div>
+
+            <!-- RAG Query Section -->
+            <div class="section-card mb-4" id="ragSection" style="display:none;">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-search me-2"></i>Ask a Question (RAG Search)
+                </h4>
+                <form id="ragForm">
+                    <div class="row align-items-end">
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="queryInput" placeholder="Type your question about the document..." required>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Retrieve
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section" id="resultsSection">
+                <div class="section-card">
+                    <h4 class="section-title mb-3">
+                        <i class="fas fa-list-ol me-2"></i>Top Relevant Chunks
+                    </h4>
+                    <div id="results-content"></div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>What This Tool Does
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Uploads and parses txt, pdf, docx, html files
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Chunks document for efficient retrieval
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Embeds and indexes with sentence-transformers
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                RAG: Retrieval-Augmented Generation search
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Ranks and previews the most relevant parts
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Fast, in-memory processing
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check session on page load
+        window.addEventListener('load', async function() {
+            await checkSession();
+        });
+
+        // Check current session
+        async function checkSession() {
+            try {
+                const response = await fetch('/get-session-info');
+                const data = await response.json();
+                if (data.success && data.has_document) {
+                    document.getElementById('sessionInfoText').textContent = 
+                        `Document loaded: ${data.filename} (${data.num_chunks} chunks)`;
+                    document.getElementById('sessionInfo').style.display = 'block';
+                    document.getElementById('ragSection').style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error checking session:', err);
+            }
+        }
+
+        // Clear session
+        async function clearSession() {
+            try {
+                const response = await fetch('/clear-session', { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('sessionInfo').style.display = 'none';
+                    document.getElementById('ragSection').style.display = 'none';
+                    document.getElementById('resultsSection').style.display = 'none';
+                    document.getElementById('uploadStatus').innerHTML = '';
+                    document.getElementById('fileInput').value = '';
+                }
+            } catch (err) {
+                console.error('Error clearing session:', err);
+            }
+        }
+
+        // Handle file upload
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files[0]) {
+                statusDiv.innerHTML = '<div class="alert alert-warning">Please select a file to upload.</div>';
+                return;
+            }
+
+            // Check file size (50MB limit)
+            const fileSize = fileInput.files[0].size / (1024 * 1024);
+            if (fileSize > 50) {
+                statusDiv.innerHTML = '<div class="alert alert-danger">File size must be less than 50MB.</div>';
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            statusDiv.innerHTML = '<div class="text-info">Uploading and indexing document... <span class="spinner-border spinner-border-sm"></span></div>';
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            try {
+                const response = await fetch('/upload-document', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.innerHTML = `<div class='alert alert-success'>
+                        <i class="fas fa-check-circle me-2"></i>
+                        Document uploaded and indexed successfully!<br>
+                        <strong>${data.filename}</strong> - ${data.num_chunks} chunks created (${data.total_text_length.toLocaleString()} characters)
+                    </div>`;
+                    document.getElementById('ragSection').style.display = 'block';
+                    await checkSession();
+                } else {
+                    statusDiv.innerHTML = `<div class='alert alert-danger'>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${data.error || 'Upload failed.'}
+                    </div>`;
+                }
+            } catch (err) {
+                statusDiv.innerHTML = `<div class='alert alert-danger'>
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Network error: ${err.message}
+                </div>`;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload & Index';
+            }
+        });
+
+        // Handle RAG query
+        document.getElementById('ragForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const query = document.getElementById('queryInput').value.trim();
+            const queryBtn = document.querySelector('#ragForm button[type="submit"]');
+            
+            if (!query) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('results-content');
+            queryBtn.disabled = true;
+            queryBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Searching...';
+            resultsDiv.innerHTML = '<div class="text-info">Searching document... <span class="spinner-border spinner-border-sm"></span></div>';
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            try {
+                const response = await fetch('/rag-query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, top_k: 5 })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.results.length === 0) {
+                        resultsDiv.innerHTML = '<div class="alert alert-warning">' +
+                            '<i class="fas fa-search me-2"></i>' +
+                            'No relevant chunks found for your query: "<strong>' + query + '</strong>"' +
+                            '</div>';
+                    } else {
+                        let html = `<div class="mb-3">
+                            <h6 class="text-muted">Query: "${query}" - Found ${data.total_results} results</h6>
+                        </div>`;
+                        data.results.forEach(r => {
+                            html += `<div class='chunk-preview'>
+                                <div class='mb-2'>
+                                    <b>Rank #${r.rank}</b> 
+                                    <span class='score-badge'>Score: ${r.score}</span>
+                                    <small class="text-muted ms-2">Chunk ${r.chunk_id + 1}</small>
+                                </div>
+                                <div style='white-space:pre-line; font-size: 0.95rem;'>${r.preview}</div>
+                            </div>`;
+                        });
+                        resultsDiv.innerHTML = html;
+                    }
+                } else {
+                    resultsDiv.innerHTML = `<div class='alert alert-danger'>
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${data.error || 'Query failed.'}
+                    </div>`;
+                }
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class='alert alert-danger'>
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Network error: ${err.message}
+                </div>`;
+            } finally {
+                queryBtn.disabled = false;
+                queryBtn.innerHTML = '<i class="fas fa-search me-2"></i>Retrieve';
+            }
+        });
+    </script>
+</body>
+</html> 

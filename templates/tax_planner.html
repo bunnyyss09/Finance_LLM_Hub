@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Planner - Finance LLM Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            margin: 2rem auto;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+        }
+        .result-section {
+            display: none;
+        }
+        .section-title {
+            color: #f093fb;
+            font-weight: 600;
+        }
+        .back-btn {
+            background: #6c757d;
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+        }
+        .tax-breakdown {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .recommendation-card {
+            border-left: 4px solid #f093fb;
+            background: #f8f9fa;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 0 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-calculator text-primary me-2"></i>
+                        Tax Planner
+                    </h1>
+                    <p class="text-muted">AI-powered Indian tax calculation and optimization</p>
+                </div>
+                <a href="/" class="btn back-btn text-white">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Home
+                </a>
+            </div>
+
+            <!-- Input Section -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-user me-2"></i>Tax Calculation
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="income" class="form-label">Annual Income (₹)</label>
+                        <input type="number" class="form-control" id="income" placeholder="Enter your annual income" min="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="deductions" class="form-label">Total Deductions (₹)</label>
+                        <input type="number" class="form-control" id="deductions" placeholder="Enter total deductions" min="0">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary w-100" onclick="calculateTax()">
+                            <i class="fas fa-calculator me-2"></i>Calculate Tax
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section">
+                <div class="section-card">
+                    <h4 class="section-title mb-3">
+                        <i class="fas fa-chart-pie me-2"></i>Tax Analysis Results
+                    </h4>
+                    <div id="results-content"></div>
+                </div>
+            </div>
+
+            <!-- Tax Slabs Info -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-info-circle me-2"></i>Indian Tax Slabs (Old Regime)
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Income Range</th>
+                                <th>Tax Rate</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Up to ₹2,50,000</td>
+                                <td>0%</td>
+                                <td>No tax</td>
+                            </tr>
+                            <tr>
+                                <td>₹2,50,001 - ₹5,00,000</td>
+                                <td>5%</td>
+                                <td>Basic rate</td>
+                            </tr>
+                            <tr>
+                                <td>₹5,00,001 - ₹10,00,000</td>
+                                <td>20%</td>
+                                <td>Standard rate</td>
+                            </tr>
+                            <tr>
+                                <td>Above ₹10,00,000</td>
+                                <td>30%</td>
+                                <td>Highest rate</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Common Deductions -->
+            <div class="section-card">
+                <h4 class="section-title mb-3">
+                    <i class="fas fa-list me-2"></i>Common Tax Deductions
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Section 80C (₹1.5L limit)</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>ELSS Mutual Funds</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Public Provident Fund (PPF)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Life Insurance Premium</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Employee Provident Fund</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Other Deductions</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success me-2"></i>NPS (₹50K additional)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Health Insurance (80D)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Home Loan Interest (24b)</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Education Loan (80E)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function calculateTax() {
+            const income = parseFloat(document.getElementById('income').value);
+            const deductions = parseFloat(document.getElementById('deductions').value);
+            
+            if (!income || income < 0) {
+                alert('Please enter a valid income amount');
+                return;
+            }
+
+            if (!deductions || deductions < 0) {
+                alert('Please enter a valid deduction amount');
+                return;
+            }
+
+            try {
+                const response = await fetch('/calculate-tax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        income: income, 
+                        deductions: deductions 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    throw new Error(data.error || 'Calculation failed');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results-content');
+            
+            let html = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Tax calculation completed successfully!
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-chart-bar me-2"></i>Tax Summary
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="mb-1"><strong>Gross Income:</strong></p>
+                                        <p class="mb-1"><strong>Deductions:</strong></p>
+                                        <p class="mb-1"><strong>Taxable Income:</strong></p>
+                                        <p class="mb-1"><strong>Total Tax:</strong></p>
+                                        <p class="mb-1"><strong>Effective Rate:</strong></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-1">₹${data.taxable_income + data.deductions.toFixed(2)}</p>
+                                        <p class="mb-1">₹${data.deductions.toFixed(2)}</p>
+                                        <p class="mb-1">₹${data.taxable_income.toFixed(2)}</p>
+                                        <p class="mb-1 text-danger fw-bold">₹${data.tax_amount.toFixed(2)}</p>
+                                        <p class="mb-1">${data.effective_rate.toFixed(2)}%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <i class="fas fa-lightbulb me-2"></i>AI Recommendations
+                            </div>
+                            <div class="card-body">
+                                ${data.recommendations.map(rec => `
+                                    <div class="recommendation-card">
+                                        <i class="fas fa-arrow-right text-primary me-2"></i>
+                                        ${rec}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-chart-pie me-2"></i>Tax Breakdown
+                            </div>
+                            <div class="card-body">
+                                <div class="tax-breakdown">
+                                    <h6 class="fw-bold">Tax Slab Breakdown:</h6>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <p class="mb-1"><strong>0% Slab:</strong></p>
+                                            <p class="text-muted">₹0 - ₹2,50,000</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p class="mb-1"><strong>5% Slab:</strong></p>
+                                            <p class="text-muted">₹2,50,001 - ₹5,00,000</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p class="mb-1"><strong>20% Slab:</strong></p>
+                                            <p class="text-muted">₹5,00,001 - ₹10,00,000</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <p class="mb-1"><strong>30% Slab:</strong></p>
+                                            <p class="text-muted">Above ₹10,00,000</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.innerHTML = html;
+            document.querySelector('.result-section').style.display = 'block';
+        }
+
+        // Enter key support
+        document.getElementById('income').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateTax();
+            }
+        });
+        document.getElementById('deductions').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateTax();
+            }
+        });
+    </script>
+</body>
+</html> 

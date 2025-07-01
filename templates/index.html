@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance LLM Hub - AI-Powered Financial Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .icon-document { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .icon-tax { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .icon-stock { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .icon-sentiment { background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; }
+        .icon-portfolio { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
+        .icon-news { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+
+        .btn-feature {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-feature:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line me-2"></i>
+                Finance LLM Hub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <div class="hero-section text-center text-white">
+            <h1 class="display-4 fw-bold mb-4">
+                AI-Powered Financial Analysis Platform
+            </h1>
+            <p class="lead mb-4">
+                Leverage the power of LLMs and AI to analyze documents, optimize portfolios, 
+                and make informed financial decisions with cutting-edge technology.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="#features" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-rocket me-2"></i>Get Started
+                </a>
+                <a href="#about" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-info-circle me-2"></i>Learn More
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">6</div>
+                    <div class="text-muted">AI Features</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">24/7</div>
+                    <div class="text-muted">Real-time Data</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">100%</div>
+                    <div class="text-muted">AI Powered</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="stats-number">∞</div>
+                    <div class="text-muted">Possibilities</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section id="features">
+            <h2 class="text-center text-white mb-5 fw-bold">Our AI-Powered Features</h2>
+            <div class="row">
+                <!-- Document Parser -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-document">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Document Parser</h4>
+                        <p class="text-muted mb-3">
+                            Extract and analyze SEC filings, financial reports, and legal documents 
+                            using advanced NLP and AI techniques.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>SEC 10-K Analysis</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Key Section Extraction</li>
+                            <li><i class="fas fa-check text-success me-2"></i>AI Summarization</li>
+                        </ul>
+                        <a href="/document-parser" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Try Document Parser
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tax Planner -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-tax">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Tax Planner</h4>
+                        <p class="text-muted mb-3">
+                            Intelligent tax calculation and optimization for Indian tax regime 
+                            with AI-powered recommendations.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>Smart Tax Calculation</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Deduction Optimization</li>
+                            <li><i class="fas fa-check text-success me-2"></i>AI Recommendations</li>
+                        </ul>
+                        <a href="/tax-planner" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Plan Your Taxes
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Live Stock Chart -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-stock">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Live Stock Charts</h4>
+                        <p class="text-muted mb-3">
+                            Real-time stock data visualization with Alpha Vantage integration 
+                            and advanced charting capabilities.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>Real-time Data</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Interactive Charts</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Company Analytics</li>
+                        </ul>
+                        <a href="/stock-chart" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>View Charts
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sentiment Analysis -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-sentiment">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Sentiment Analysis</h4>
+                        <p class="text-muted mb-3">
+                            Advanced sentiment analysis for financial text, news, and social media 
+                            using state-of-the-art NLP models.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>Text Sentiment</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Key Phrase Extraction</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Insight Generation</li>
+                        </ul>
+                        <a href="/sentiment-analysis" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Analyze Sentiment
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Portfolio Optimizer -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-portfolio">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Portfolio Optimizer</h4>
+                        <p class="text-muted mb-3">
+                            AI-driven portfolio optimization using Markowitz theory and 
+                            machine learning for optimal asset allocation.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>Risk Optimization</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Sharpe Ratio Analysis</li>
+                            <li><i class="fas fa-check text-success me-2"></i>ML-Based Weights</li>
+                        </ul>
+                        <a href="/portfolio-optimizer" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Optimize Portfolio
+                        </a>
+                    </div>
+                </div>
+
+                <!-- News Analyzer -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon icon-news">
+                            <i class="fas fa-newspaper"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">News Analyzer</h4>
+                        <p class="text-muted mb-3">
+                            Financial news analysis with entity extraction, market impact assessment, 
+                            and trading insights generation.
+                        </p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check text-success me-2"></i>Entity Extraction</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Market Impact</li>
+                            <li><i class="fas fa-check text-success me-2"></i>Trading Insights</li>
+                        </ul>
+                        <a href="/news-analyzer" class="btn btn-feature w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Analyze News
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="mt-5">
+            <div class="hero-section">
+                <h2 class="text-center text-white mb-4 fw-bold">About Finance LLM Hub</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-3">🚀 Cutting-Edge Technology</h5>
+                        <p class="text-white-50">
+                            Built with the latest AI and machine learning technologies, our platform 
+                            provides comprehensive financial analysis tools powered by large language models.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-3">🎯 Intelligent Insights</h5>
+                        <p class="text-white-50">
+                            From document parsing to portfolio optimization, every feature is designed 
+                            to provide actionable insights for better financial decision-making.
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-3">📊 Real-time Data</h5>
+                        <p class="text-white-50">
+                            Access live market data, real-time sentiment analysis, and up-to-date 
+                            financial information from multiple reliable sources.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="text-white mb-3">🔒 Secure & Reliable</h5>
+                        <p class="text-white-50">
+                            Your data security is our priority. All analysis is performed securely 
+                            with industry-standard encryption and privacy protection.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="mb-3">Finance LLM Hub</h5>
+                    <p class="text-white-50">
+                        Empowering financial decisions with AI and machine learning.
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <div class="d-flex flex-column">
+                        <a href="/document-parser" class="text-white-50 text-decoration-none mb-1">Document Parser</a>
+                        <a href="/tax-planner" class="text-white-50 text-decoration-none mb-1">Tax Planner</a>
+                        <a href="/stock-chart" class="text-white-50 text-decoration-none mb-1">Stock Charts</a>
+                        <a href="/sentiment-analysis" class="text-white-50 text-decoration-none mb-1">Sentiment Analysis</a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
+            <div class="text-center text-white-50">
+                <small>&copy; 2024 Finance LLM Hub. Built with ❤️ and AI.</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
