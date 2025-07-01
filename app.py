@@ -38,8 +38,8 @@ app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB limit
 
-# Alpha Vantage API Key
-ALPHA_VANTAGE_API_KEY = "2VDHJUTDISNC6NHT"
+# Finnhub API Key
+FINNHUB_API_KEY = "d1hum6hr01qhsrhc8ftgd1hum6hr01qhsrhc8fu0"
 
 # Tax slabs for India (Old Regime)
 TAX_SLABS = [
@@ -329,54 +329,42 @@ def calculate_tax():
         data = request.get_json()
         income = float(data.get('income', 0))
         deductions = float(data.get('deductions', 0))
-        
-        # Calculate tax
+        investment_income = float(data.get('investment_income', 0))
+        age = int(data.get('age', 30))
+        state = data.get('state', 'CA')
+        features = [income, investment_income, deductions, age, state]
+        api_url = 'http://localhost:5000/optimize_tax'  # Change port if needed
+        payload = {'features': features}
+        try:
+            resp = requests.post(api_url, json=payload, timeout=10)
+            resp.raise_for_status()
+            result = resp.json()
+            optimized_tax = float(result.get('optimized_tax', 0))
+        except Exception as e:
+            return jsonify({'error': f'Failed to connect to tax optimizer API: {str(e)}'}), 500
         taxable_income = max(0, income - deductions)
-        tax = 0.0
-        prev_limit = 0
-        
-        for limit, rate in TAX_SLABS:
-            if taxable_income > prev_limit:
-                slab_amount = min(taxable_income, limit) - prev_limit
-                tax += slab_amount * rate
-                prev_limit = limit
-            else:
-                break
-        
-        # Calculate effective tax rate
-        effective_rate = (tax / income * 100) if income > 0 else 0
-        
-        # Generate recommendations
-        recommendations = generate_tax_recommendations(income, deductions, tax)
-        
+        effective_rate = (optimized_tax / income * 100) if income > 0 else 0
+        # Smart Budget Plan (now based on taxable income)
+        monthly_taxable_income = taxable_income / 12
+        budget_weights = {
+            'rent': 0.3,
+            'groceries': 0.15,
+            'entertainment': 0.1,
+            'insurance': 0.1,
+            'savings': 0.25,
+            'misc': 0.1
+        }
+        budget_plan = {cat: round(monthly_taxable_income * w, 2) for cat, w in budget_weights.items()}
         return jsonify({
             'success': True,
             'taxable_income': round(taxable_income, 2),
-            'tax_amount': round(tax, 2),
+            'tax_amount': round(optimized_tax, 2),
             'effective_rate': round(effective_rate, 2),
-            'recommendations': recommendations
+            'deductions': round(deductions, 2),
+            'budget_plan': budget_plan  # Based on after-tax, after-deduction income
         })
-        
     except Exception as e:
         return jsonify({'error': str(e)})
-
-def generate_tax_recommendations(income, deductions, tax):
-    """Generate personalized tax recommendations"""
-    recommendations = []
-    
-    if deductions < 150000:  # Standard deduction limit
-        recommendations.append("Consider maximizing 80C deductions (ELSS, PPF, LIC) up to ₹1.5L")
-    
-    if income > 1000000:
-        recommendations.append("Consider NPS contribution for additional ₹50K deduction under 80CCD(1B)")
-    
-    if deductions < income * 0.3:
-        recommendations.append("Explore home loan interest deduction under Section 24(b)")
-    
-    if not recommendations:
-        recommendations.append("Your tax planning looks good! Consider consulting a tax advisor for optimization.")
-    
-    return recommendations
 
 # 3. Live Stock Chart Functionality
 @app.route('/stock-chart')
@@ -388,40 +376,29 @@ def get_stock_data():
     try:
         data = request.get_json()
         symbol = data.get('symbol', 'AAPL').upper()
-        
-        # Get stock data from Alpha Vantage
-        url = f'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={ALPHA_VANTAGE_API_KEY}'
-        response = requests.get(url)
-        data = response.json()
-        
-        if 'Error Message' in data:
-            return jsonify({'error': 'Invalid symbol or API error'})
-        
-        time_series = data.get('Time Series (Daily)', {})
-        if not time_series:
+
+        # Get stock data from yfinance
+        ticker = yf.Ticker(symbol)
+        hist = ticker.history(period='1mo')  # Last 30 days
+        if hist.empty:
             return jsonify({'error': 'No data available for this symbol'})
-        
-        # Process data for charting
-        dates = []
-        prices = []
-        volumes = []
-        
-        for date, values in list(time_series.items())[:30]:  # Last 30 days
-            dates.append(date)
-            prices.append(float(values['4. close']))
-            volumes.append(int(values['5. volume']))
-        
-        # Reverse to get chronological order
-        dates.reverse()
-        prices.reverse()
-        volumes.reverse()
-        
-        # Get company info
-        company_info = get_company_info(symbol)
-        
-        # --- New: Analyze past week trend and generate recommendation ---
+        dates = [d.strftime('%Y-%m-%d') for d in hist.index]
+        prices = hist['Close'].tolist()
+        volumes = hist['Volume'].tolist()
+
+        # Get company info from yfinance
+        info = ticker.info
+        company_info = {
+            'name': info.get('longName', symbol),
+            'sector': info.get('sector', 'N/A'),
+            'industry': info.get('industry', 'N/A'),
+            'market_cap': info.get('marketCap', 'N/A'),
+            'pe_ratio': info.get('trailingPE', 'N/A')
+        }
+
+        # --- Analyze past week trend and generate recommendation ---
         recommendation = generate_stock_recommendation(prices, company_info)
-        
+
         return jsonify({
             'success': True,
             'symbol': symbol,
@@ -431,7 +408,6 @@ def get_stock_data():
             'company_info': company_info,
             'recommendation': recommendation
         })
-        
     except Exception as e:
         return jsonify({'error': str(e)})
 
@@ -488,47 +464,40 @@ def sentiment_analysis():
 
 @app.route('/get-financial-news', methods=['GET'])
 def get_financial_news():
-    """Fetch financial news from Alpha Vantage API"""
+    """Fetch company news from Finnhub API (AAPL as default)"""
     try:
-        # Get news from Alpha Vantage
-        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={ALPHA_VANTAGE_API_KEY}&limit=20'
+        from datetime import datetime, timedelta
+        symbol = 'AAPL'  # Default symbol for demo; can be parameterized
+        to_date = datetime.utcnow().date()
+        from_date = to_date - timedelta(days=30)
+        url = f'https://finnhub.io/api/v1/company-news?symbol={symbol}&from={from_date}&to={to_date}&token={FINNHUB_API_KEY}'
         response = requests.get(url)
         data = response.json()
-        
-        if 'feed' not in data:
+        print("Finnhub company-news response:", data)  # DEBUG
+        if not isinstance(data, list):
             return jsonify({'error': 'No news data available'})
-        
         news_items = []
-        for item in data['feed'][:15]:  # Limit to 15 items
-            # Analyze sentiment using our RoBERTa model
-            title = item.get('title', '')
+        for item in data[:15]:  # Limit to 15 items
+            title = item.get('headline', '')
             summary = item.get('summary', '')
             text_to_analyze = f"{title}. {summary}"
-            
-            # Get sentiment analysis
             sentiment_result = analyze_text_sentiment(text_to_analyze)
-            
-            # Categorize news
-            category = categorize_news(title, summary)
-            
             news_items.append({
                 'title': title,
                 'summary': summary[:200] + "..." if len(summary) > 200 else summary,
                 'url': item.get('url', ''),
-                'time_published': item.get('time_published', ''),
+                'time_published': item.get('datetime', ''),
                 'source': item.get('source', ''),
                 'sentiment': sentiment_result['sentiment'],
                 'confidence': sentiment_result['confidence'],
-                'category': category,
-                'tickers': item.get('ticker_sentiment', [])[:3]  # Top 3 tickers
+                'category': 'Company',
+                'tickers': [symbol]
             })
-        
         return jsonify({
             'success': True,
             'news': news_items,
             'total_count': len(news_items)
         })
-        
     except Exception as e:
         return jsonify({'error': str(e)})
 
@@ -556,33 +525,30 @@ def analyze_news_sentiment():
 
 @app.route('/get-news-sentiment-summary', methods=['GET'])
 def get_news_sentiment_summary():
-    """Get overall sentiment statistics for recent news"""
+    """Get overall sentiment statistics for recent company news from Finnhub (AAPL)"""
     try:
-        # Fetch recent news and analyze
-        url = f'https://www.alphavantage.co/query?function=NEWS_SENTIMENT&apikey={ALPHA_VANTAGE_API_KEY}&limit=50'
+        from datetime import datetime, timedelta
+        symbol = 'AAPL'
+        to_date = datetime.utcnow().date()
+        from_date = to_date - timedelta(days=30)
+        url = f'https://finnhub.io/api/v1/company-news?symbol={symbol}&from={from_date}&to={to_date}&token={FINNHUB_API_KEY}'
         response = requests.get(url)
         data = response.json()
-        
-        if 'feed' not in data:
+        if not isinstance(data, list):
             return jsonify({'error': 'No news data available'})
-        
         sentiments = {'positive': 0, 'neutral': 0, 'negative': 0}
         categories = {}
-        
-        for item in data['feed'][:30]:
-            title = item.get('title', '')
+        for item in data[:30]:
+            title = item.get('headline', '')
             summary = item.get('summary', '')
             text = f"{title}. {summary}"
-            
             sentiment_result = analyze_text_sentiment(text)
             sentiment = sentiment_result['sentiment'].lower()
             sentiments[sentiment] += 1
-            
-            category = categorize_news(title, summary)
+            category = 'Company'
             if category not in categories:
                 categories[category] = {'positive': 0, 'neutral': 0, 'negative': 0}
             categories[category][sentiment] += 1
-        
         total = sum(sentiments.values())
         if total > 0:
             sentiment_percentages = {
@@ -592,8 +558,6 @@ def get_news_sentiment_summary():
             }
         else:
             sentiment_percentages = {'positive': 0, 'neutral': 0, 'negative': 0}
-        
-        # Determine overall market sentiment
         if sentiment_percentages['positive'] > 60:
             overall_sentiment = "Bullish"
             sentiment_description = "Market sentiment is positive with strong optimism"
@@ -603,7 +567,6 @@ def get_news_sentiment_summary():
         else:
             overall_sentiment = "Neutral"
             sentiment_description = "Market sentiment is mixed with balanced views"
-        
         return jsonify({
             'success': True,
             'overall_sentiment': overall_sentiment,
@@ -612,7 +575,6 @@ def get_news_sentiment_summary():
             'category_breakdown': categories,
             'total_news_analyzed': total
         })
-        
     except Exception as e:
         return jsonify({'error': str(e)})
 

@@ -71,7 +71,7 @@
                         <i class="fas fa-calculator text-primary me-2"></i>
                         Tax Planner
                     </h1>
-                    <p class="text-muted">AI-powered Indian tax calculation and optimization</p>
+                    <p class="text-muted">AI-powered US tax calculation and optimization</p>
                 </div>
                 <a href="/" class="btn back-btn text-white">
                     <i class="fas fa-arrow-left me-2"></i>Back to Home
@@ -85,12 +85,32 @@
                 </h4>
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="income" class="form-label">Annual Income (₹)</label>
+                        <label for="income" class="form-label">Annual Income ($)</label>
                         <input type="number" class="form-control" id="income" placeholder="Enter your annual income" min="0">
                     </div>
                     <div class="col-md-6">
-                        <label for="deductions" class="form-label">Total Deductions (₹)</label>
+                        <label for="deductions" class="form-label">Total Deductions ($)</label>
                         <input type="number" class="form-control" id="deductions" placeholder="Enter total deductions" min="0">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label for="investment_income" class="form-label">Investment Income ($)</label>
+                        <input type="number" class="form-control" id="investment_income" placeholder="Enter investment income" min="0" value="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" placeholder="Enter your age" min="18" max="100" value="30">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="state" class="form-label">State</label>
+                        <select class="form-select" id="state">
+                            <option value="CA">California (CA)</option>
+                            <option value="FL">Florida (FL)</option>
+                            <option value="NY">New York (NY)</option>
+                            <option value="WA">Washington (WA)</option>
+                            <option value="TX">Texas (TX)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -110,72 +130,12 @@
                     </h4>
                     <div id="results-content"></div>
                 </div>
-            </div>
-
-            <!-- Tax Slabs Info -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-info-circle me-2"></i>Indian Tax Slabs (Old Regime)
-                </h4>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Income Range</th>
-                                <th>Tax Rate</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Up to ₹2,50,000</td>
-                                <td>0%</td>
-                                <td>No tax</td>
-                            </tr>
-                            <tr>
-                                <td>₹2,50,001 - ₹5,00,000</td>
-                                <td>5%</td>
-                                <td>Basic rate</td>
-                            </tr>
-                            <tr>
-                                <td>₹5,00,001 - ₹10,00,000</td>
-                                <td>20%</td>
-                                <td>Standard rate</td>
-                            </tr>
-                            <tr>
-                                <td>Above ₹10,00,000</td>
-                                <td>30%</td>
-                                <td>Highest rate</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Common Deductions -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-list me-2"></i>Common Tax Deductions
-                </h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Section 80C (₹1.5L limit)</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i>ELSS Mutual Funds</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Public Provident Fund (PPF)</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Life Insurance Premium</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Employee Provident Fund</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Other Deductions</h6>
-                        <ul class="list-unstyled">
-                            <li><i class="fas fa-check text-success me-2"></i>NPS (₹50K additional)</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Health Insurance (80D)</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Home Loan Interest (24b)</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Education Loan (80E)</li>
-                        </ul>
-                    </div>
+                <!-- Smart Budget Plan Section -->
+                <div class="section-card" id="budget-plan-section" style="display:none;">
+                    <h4 class="section-title mb-3">
+                        <i class="fas fa-wallet me-2"></i>Smart Budget Plan (Monthly)
+                    </h4>
+                    <div id="budget-plan-content"></div>
                 </div>
             </div>
         </div>
@@ -186,6 +146,9 @@
         async function calculateTax() {
             const income = parseFloat(document.getElementById('income').value);
             const deductions = parseFloat(document.getElementById('deductions').value);
+            const investment_income = parseFloat(document.getElementById('investment_income').value);
+            const age = parseInt(document.getElementById('age').value);
+            const state = document.getElementById('state').value;
             
             if (!income || income < 0) {
                 alert('Please enter a valid income amount');
@@ -197,6 +160,11 @@
                 return;
             }
 
+            if (!age || age < 18 || age > 100) {
+                alert('Please enter a valid age (18-100)');
+                return;
+            }
+
             try {
                 const response = await fetch('/calculate-tax', {
                     method: 'POST',
@@ -205,7 +173,10 @@
                     },
                     body: JSON.stringify({ 
                         income: income, 
-                        deductions: deductions 
+                        deductions: deductions,
+                        investment_income: investment_income,
+                        age: age,
+                        state: state
                     })
                 });
 
@@ -246,59 +217,11 @@
                                         <p class="mb-1"><strong>Effective Rate:</strong></p>
                                     </div>
                                     <div class="col-6">
-                                        <p class="mb-1">₹${data.taxable_income + data.deductions.toFixed(2)}</p>
-                                        <p class="mb-1">₹${data.deductions.toFixed(2)}</p>
-                                        <p class="mb-1">₹${data.taxable_income.toFixed(2)}</p>
-                                        <p class="mb-1 text-danger fw-bold">₹${data.tax_amount.toFixed(2)}</p>
+                                        <p class="mb-1">$${(data.taxable_income + data.deductions).toFixed(2)}</p>
+                                        <p class="mb-1">$${data.deductions.toFixed(2)}</p>
+                                        <p class="mb-1">$${data.taxable_income.toFixed(2)}</p>
+                                        <p class="mb-1 text-danger fw-bold">$${data.tax_amount.toFixed(2)}</p>
                                         <p class="mb-1">${data.effective_rate.toFixed(2)}%</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-success text-white">
-                                <i class="fas fa-lightbulb me-2"></i>AI Recommendations
-                            </div>
-                            <div class="card-body">
-                                ${data.recommendations.map(rec => `
-                                    <div class="recommendation-card">
-                                        <i class="fas fa-arrow-right text-primary me-2"></i>
-                                        ${rec}
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header bg-info text-white">
-                                <i class="fas fa-chart-pie me-2"></i>Tax Breakdown
-                            </div>
-                            <div class="card-body">
-                                <div class="tax-breakdown">
-                                    <h6 class="fw-bold">Tax Slab Breakdown:</h6>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <p class="mb-1"><strong>0% Slab:</strong></p>
-                                            <p class="text-muted">₹0 - ₹2,50,000</p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <p class="mb-1"><strong>5% Slab:</strong></p>
-                                            <p class="text-muted">₹2,50,001 - ₹5,00,000</p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <p class="mb-1"><strong>20% Slab:</strong></p>
-                                            <p class="text-muted">₹5,00,001 - ₹10,00,000</p>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <p class="mb-1"><strong>30% Slab:</strong></p>
-                                            <p class="text-muted">Above ₹10,00,000</p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -309,6 +232,22 @@
             
             resultsDiv.innerHTML = html;
             document.querySelector('.result-section').style.display = 'block';
+            // Show budget plan if present
+            if (data.budget_plan) {
+                const budgetDiv = document.getElementById('budget-plan-content');
+                let budgetHtml = '<ul class="list-group">';
+                for (const [cat, val] of Object.entries(data.budget_plan)) {
+                    budgetHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                        <span class="fw-bold">$${val.toFixed(2)}</span>
+                    </li>`;
+                }
+                budgetHtml += '</ul>';
+                budgetDiv.innerHTML = budgetHtml;
+                document.getElementById('budget-plan-section').style.display = 'block';
+            } else {
+                document.getElementById('budget-plan-section').style.display = 'none';
+            }
         }
 
         // Enter key support
