@@ -3,390 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance LLM Hub - AI-Powered Financial Analysis</title>
+    <title>Finance LLM Hub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --dark-color: #1f2937;
-            --light-color: #f8fafc;
+            --bg-dark: #18181A;
+            --bg-gradient: radial-gradient(ellipse at 60% 0%, #23234a 0%, #18181A 80%);
+            --glass-bg: rgba(36, 37, 46, 0.85);
+            --glass-border: rgba(255,255,255,0.10);
+            --primary-gradient: linear-gradient(135deg, #5B86E5 0%, #36D1C4 100%);
+            --accent-gradient: linear-gradient(135deg, #A770EF 0%, #FDB99B 100%);
+            --blue-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --green-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --pink-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --footer-bg: #1C1C1E;
+            --text-light: #fff;
+            --text-muted: #b0b0b0;
         }
-
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient), var(--bg-dark);
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
-
         .hero-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 3rem;
-            margin: 2rem 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            border-radius: 0 0 48px 48px;
+            padding: 120px 0 90px 0;
+            position: relative;
+            text-align: center;
+            z-index: 1;
         }
-
+        .hero-title {
+            font-size: 3.6rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 30px;
+            letter-spacing: -1.5px;
+            text-shadow: 0 0 32px #5B86E5cc, 0 2px 8px #000a;
+            position: relative;
+        }
+        .hero-title-glow {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -60%);
+            width: 420px;
+            height: 120px;
+            background: radial-gradient(circle, #5B86E5 0%, #23234a00 80%);
+            opacity: 0.18;
+            filter: blur(24px);
+            z-index: 0;
+        }
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: #e0e0e0;
+            font-weight: 400;
+            margin-bottom: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            z-index: 1;
+            position: relative;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin: 0 auto 0 auto;
+            max-width: 1200px;
+            z-index: 1;
+        }
         .feature-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 2rem;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: var(--glass-bg);
+            border-radius: 28px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+            border: 1.5px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+            padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+            transition: box-shadow 0.3s, transform 0.2s, border 0.2s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 340px;
         }
-
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 16px 48px #5B86E5cc;
+            transform: translateY(-8px) scale(1.045);
+            border: 1.5px solid #5B86E5;
         }
-
         .feature-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
+            font-size: 2.7rem;
+            margin-bottom: 1.2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            color: #fff;
+            box-shadow: 0 4px 16px #a770ef44;
         }
-
-        .icon-document { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .icon-tax { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
-        .icon-stock { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
-        .icon-sentiment { background: linear-gradient(135deg, #43e97b, #38f9d7); color: white; }
-        .icon-portfolio { background: linear-gradient(135deg, #fa709a, #fee140); color: white; }
-        .icon-news { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
-
-        .btn-feature {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-feature:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-            color: white;
-        }
-
-        .navbar-brand {
+        .feature-title {
+            font-size: 1.3rem;
             font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        .stats-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 1.5rem;
+            margin-bottom: 0.7rem;
+            color: #fff;
             text-align: center;
-            margin: 1rem 0;
         }
-
-        .stats-number {
-            font-size: 2rem;
+        .feature-desc {
+            color: var(--text-muted);
+            font-size: 1.08rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            flex: 1 1 auto;
+        }
+        .btn-feature {
+            background: var(--blue-gradient);
+            border: none;
+            border-radius: 14px;
+            padding: 0.7rem 1.5rem;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: box-shadow 0.2s, transform 0.2s;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        .btn-feature:hover {
+            box-shadow: 0 8px 24px #764ba288;
+            transform: translateY(-2px) scale(1.04);
+            color: #fff;
+        }
+        .about-section {
+            background: var(--glass-bg);
+            border-radius: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            border: 1.5px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+            padding: 1.2rem 0.7rem 1rem 0.7rem;
+            margin: 2rem auto 1rem auto;
+            max-width: 700px;
+            position: relative;
+        }
+        .about-title {
+            font-size: 1.3rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: #fff;
+            margin-bottom: 0.7rem;
+            text-align: center;
+            letter-spacing: -0.5px;
         }
-
+        .about-divider {
+            width: 36px;
+            height: 3px;
+            margin: 0 auto 0.7rem auto;
+            border-radius: 2px;
+            background: var(--primary-gradient);
+            opacity: 0.7;
+        }
+        .about-mission {
+            font-size: 0.98rem;
+            color: #e0e0e0;
+            font-weight: 400;
+            text-align: center;
+            max-width: 420px;
+            margin: 0 auto 1.1rem auto;
+        }
+        .about-pill-cards {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: stretch;
+            gap: 1rem;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+        .about-pill-card {
+            background: var(--glass-bg);
+            border-radius: 18px;
+            border: 1.2px solid var(--primary-gradient);
+            box-shadow: 0 2px 8px #5B86E522;
+            padding: 0.7rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
+            max-width: 150px;
+            flex: 1 1 120px;
+        }
+        .about-pill-icon {
+            font-size: 1.2rem;
+            background: var(--green-gradient);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            margin-bottom: 0.3rem;
+        }
+        .about-pill-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.1rem;
+            text-align: center;
+        }
+        .about-pill-desc {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: center;
+        }
         .footer {
-            background: rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 2rem 0;
-            margin-top: 3rem;
+            background: var(--footer-bg);
+            color: #b0b0b0;
+            padding: 2.5rem 0 1.2rem 0;
+            margin-top: 6rem;
+            border-top: 1.5px solid var(--glass-border);
+        }
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.7rem;
+        }
+        .footer-links-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 1.1rem;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .footer-link {
+            color: #b0b0b0;
+            text-decoration: none;
+            font-size: 0.98rem;
+            transition: color 0.2s;
+            padding: 0 0.2rem;
+            position: relative;
+        }
+        .footer-link:not(:last-child)::after {
+            content: "|";
+            color: #444a;
+            margin-left: 1.1rem;
+            margin-right: 0;
+            font-weight: 400;
+        }
+        .footer-link:hover {
+            color: #fff;
+        }
+        .footer-divider {
+            border-color: rgba(255,255,255,0.12);
+        }
+        @media (max-width: 1100px) {
+            .feature-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .feature-grid { grid-template-columns: 1fr; }
+            .about-pill-cards { flex-direction: column; gap: 0.7rem; align-items: center; }
+            .about-pill-card { min-width: 160px; max-width: 220px; }
+            .footer-links-row {
+                justify-content: center;
+                gap: 0.7rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .hero-title { font-size: 2rem; }
+            .hero-section { padding: 48px 0 30px 0; }
+            .feature-card { padding: 1.2rem 0.7rem 1rem 0.7rem; }
+            .about-section { padding: 0.7rem 0.2rem 0.7rem 0.2rem; }
+            .footer-links-row {
+                flex-direction: column;
+                gap: 0.2rem;
+                align-items: center;
+            }
+            .footer-link:not(:last-child)::after {
+                content: none;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-chart-line me-2"></i>
+    <section class="hero-section">
+        <div class="container position-relative">
+            <div class="hero-title position-relative">
                 Finance LLM Hub
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
-                    </li>
-                </ul>
+                <span class="hero-title-glow"></span>
+            </div>
+            <div class="hero-subtitle">Modern AI-powered tools for smarter financial decisions.<br>Tax, investments, sentiment, and more—beautifully integrated.</div>
+        </div>
+    </section>
+    <div class="container" style="margin-top: 0; margin-bottom: 5rem;">
+        <div class="feature-grid py-5">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-calculator"></i></div>
+                <div class="feature-title">Tax Planner</div>
+                <div class="feature-desc">AI-powered US tax calculation, optimization, and smart budgeting with a beautiful, modern interface.</div>
+                <a href="/tax-planner" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>Plan Your Taxes</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-smile-beam"></i></div>
+                <div class="feature-title">Sentiment Analysis</div>
+                <div class="feature-desc">Analyze financial news and text sentiment using advanced AI models. Visual, actionable, and fast.</div>
+                <a href="/sentiment-analysis" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>Analyze Sentiment</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="feature-title">Portfolio Optimizer</div>
+                <div class="feature-desc">Optimize your investment portfolio with AI-driven risk and sentiment analysis. Smarter allocations, better returns.</div>
+                <a href="/portfolio-optimizer" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>Optimize Portfolio</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-area"></i></div>
+                <div class="feature-title">Stock Chart</div>
+                <div class="feature-desc">Visualize stock trends, get instant AI-powered recommendations, and explore company insights in real time.</div>
+                <a href="/stock-chart" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>View Stock Chart</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-newspaper"></i></div>
+                <div class="feature-title">News Analyzer</div>
+                <div class="feature-desc">Extract, analyze, and summarize financial news for actionable insights. Powered by AI and NLP.</div>
+                <a href="/news-analyzer" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>Analyze News</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="feature-title">Document Parser</div>
+                <div class="feature-desc">Upload and parse financial documents, search with RAG, and extract key insights using state-of-the-art AI.</div>
+                <a href="/document-parser" class="btn btn-feature"><i class="fas fa-arrow-right me-2"></i>Parse Documents</a>
             </div>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="container">
-        <div class="hero-section text-center text-white">
-            <h1 class="display-4 fw-bold mb-4">
-                AI-Powered Financial Analysis Platform
-            </h1>
-            <p class="lead mb-4">
-                Leverage the power of LLMs and AI to analyze documents, optimize portfolios, 
-                and make informed financial decisions with cutting-edge technology.
-            </p>
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="#features" class="btn btn-light btn-lg px-4">
-                    <i class="fas fa-rocket me-2"></i>Get Started
-                </a>
-                <a href="#about" class="btn btn-outline-light btn-lg px-4">
-                    <i class="fas fa-info-circle me-2"></i>Learn More
-                </a>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="row mb-5">
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-number">6</div>
-                    <div class="text-muted">AI Features</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-number">24/7</div>
-                    <div class="text-muted">Real-time Data</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-number">100%</div>
-                    <div class="text-muted">AI Powered</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card">
-                    <div class="stats-number">∞</div>
-                    <div class="text-muted">Possibilities</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features Section -->
-        <section id="features">
-            <h2 class="text-center text-white mb-5 fw-bold">Our AI-Powered Features</h2>
-            <div class="row">
-                <!-- Document Parser -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-document">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Document Parser</h4>
-                        <p class="text-muted mb-3">
-                            Extract and analyze SEC filings, financial reports, and legal documents 
-                            using advanced NLP and AI techniques.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>SEC 10-K Analysis</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Key Section Extraction</li>
-                            <li><i class="fas fa-check text-success me-2"></i>AI Summarization</li>
-                        </ul>
-                        <a href="/document-parser" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>Try Document Parser
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Tax Planner -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-tax">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Tax Planner</h4>
-                        <p class="text-muted mb-3">
-                            Intelligent tax calculation and optimization for Indian tax regime 
-                            with AI-powered recommendations.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>Smart Tax Calculation</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Deduction Optimization</li>
-                            <li><i class="fas fa-check text-success me-2"></i>AI Recommendations</li>
-                        </ul>
-                        <a href="/tax-planner" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>Plan Your Taxes
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Live Stock Chart -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-stock">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Live Stock Charts</h4>
-                        <p class="text-muted mb-3">
-                            Real-time stock data visualization with Alpha Vantage integration 
-                            and advanced charting capabilities.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>Real-time Data</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Interactive Charts</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Company Analytics</li>
-                        </ul>
-                        <a href="/stock-chart" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>View Charts
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Sentiment Analysis -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-sentiment">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Sentiment Analysis</h4>
-                        <p class="text-muted mb-3">
-                            Advanced sentiment analysis for financial text, news, and social media 
-                            using state-of-the-art NLP models.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>Text Sentiment</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Key Phrase Extraction</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Insight Generation</li>
-                        </ul>
-                        <a href="/sentiment-analysis" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>Analyze Sentiment
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Portfolio Optimizer -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-portfolio">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">Portfolio Optimizer</h4>
-                        <p class="text-muted mb-3">
-                            AI-driven portfolio optimization using Markowitz theory and 
-                            machine learning for optimal asset allocation.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>Risk Optimization</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Sharpe Ratio Analysis</li>
-                            <li><i class="fas fa-check text-success me-2"></i>ML-Based Weights</li>
-                        </ul>
-                        <a href="/portfolio-optimizer" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>Optimize Portfolio
-                        </a>
-                    </div>
-                </div>
-
-                <!-- News Analyzer -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon icon-news">
-                            <i class="fas fa-newspaper"></i>
-                        </div>
-                        <h4 class="fw-bold mb-3">News Analyzer</h4>
-                        <p class="text-muted mb-3">
-                            Financial news analysis with entity extraction, market impact assessment, 
-                            and trading insights generation.
-                        </p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check text-success me-2"></i>Entity Extraction</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Market Impact</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Trading Insights</li>
-                        </ul>
-                        <a href="/news-analyzer" class="btn btn-feature w-100">
-                            <i class="fas fa-arrow-right me-2"></i>Analyze News
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- About Section -->
-        <section id="about" class="mt-5">
-            <div class="hero-section">
-                <h2 class="text-center text-white mb-4 fw-bold">About Finance LLM Hub</h2>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5 class="text-white mb-3">🚀 Cutting-Edge Technology</h5>
-                        <p class="text-white-50">
-                            Built with the latest AI and machine learning technologies, our platform 
-                            provides comprehensive financial analysis tools powered by large language models.
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5 class="text-white mb-3">🎯 Intelligent Insights</h5>
-                        <p class="text-white-50">
-                            From document parsing to portfolio optimization, every feature is designed 
-                            to provide actionable insights for better financial decision-making.
-                        </p>
-                    </div>
+        <div class="about-section mt-5">
+            <div class="about-title">About Finance LLM Hub</div>
+            <div class="about-divider"></div>
+            <div class="about-mission">
+                Finance LLM Hub brings together smart AI tools to help you with taxes, investments, and more. Simple, secure, and easy to use.
+            </div>
+            <div class="about-pill-cards">
+                <div class="about-pill-card">
+                    <div class="about-pill-icon"><i class="fas fa-bolt"></i></div>
+                    <div class="about-pill-title">Smart AI</div>
+                    <div class="about-pill-desc">Get helpful answers and insights fast.</div>
                 </div>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <h5 class="text-white mb-3">📊 Real-time Data</h5>
-                        <p class="text-white-50">
-                            Access live market data, real-time sentiment analysis, and up-to-date 
-                            financial information from multiple reliable sources.
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h5 class="text-white mb-3">🔒 Secure & Reliable</h5>
-                        <p class="text-white-50">
-                            Your data security is our priority. All analysis is performed securely 
-                            with industry-standard encryption and privacy protection.
-                        </p>
-                    </div>
+                <div class="about-pill-card">
+                    <div class="about-pill-icon"><i class="fas fa-lock"></i></div>
+                    <div class="about-pill-title">Secure</div>
+                    <div class="about-pill-desc">Your info stays private.</div>
+                </div>
+                <div class="about-pill-card">
+                    <div class="about-pill-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="about-pill-title">Live Data</div>
+                    <div class="about-pill-desc">See the latest market trends.</div>
+                </div>
+                <div class="about-pill-card">
+                    <div class="about-pill-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div class="about-pill-title">Easy Tips</div>
+                    <div class="about-pill-desc">Clear advice you can use right away.</div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
-
     <!-- Footer -->
-    <footer class="footer text-white">
+    <footer class="footer text-center">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <h5 class="mb-3">Finance LLM Hub</h5>
-                    <p class="text-white-50">
-                        Empowering financial decisions with AI and machine learning.
-                    </p>
+                <div class="col-md-6 text-md-start mb-3 mb-md-0">
+                    <div class="footer-title">Finance LLM Hub</div>
+                    <div>Empowering financial decisions with AI and machine learning.</div>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <h5 class="mb-3">Quick Links</h5>
-                    <div class="d-flex flex-column">
-                        <a href="/document-parser" class="text-white-50 text-decoration-none mb-1">Document Parser</a>
-                        <a href="/tax-planner" class="text-white-50 text-decoration-none mb-1">Tax Planner</a>
-                        <a href="/stock-chart" class="text-white-50 text-decoration-none mb-1">Stock Charts</a>
-                        <a href="/sentiment-analysis" class="text-white-50 text-decoration-none mb-1">Sentiment Analysis</a>
+                    <div class="footer-title">Quick Links</div>
+                    <div class="footer-links-row">
+                        <a href="/document-parser" class="footer-link">Document Parser</a>
+                        <a href="/tax-planner" class="footer-link">Tax Planner</a>
+                        <a href="/stock-chart" class="footer-link">Stock Charts</a>
+                        <a href="/sentiment-analysis" class="footer-link">Sentiment Analysis</a>
+                        <a href="/portfolio-optimizer" class="footer-link">Portfolio Optimizer</a>
+                        <a href="/news-analyzer" class="footer-link">News Analyzer</a>
                     </div>
                 </div>
             </div>
-            <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
-            <div class="text-center text-white-50">
-                <small>&copy; 2025 Finance LLM Hub. Built by Group 29 </small>
+            <hr class="footer-divider my-4">
+            <div class="text-center">
+                <small>&copy; 2025 Finance LLM Hub. Built by Group 29</small>
             </div>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

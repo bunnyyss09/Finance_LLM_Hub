@@ -9,46 +9,59 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            background: radial-gradient(ellipse at 60% 20%, #23234a 60%, #181828 100%);
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f3f6fa;
         }
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            margin: 2rem auto;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            background: rgba(36, 38, 60, 0.82);
+            border-radius: 28px;
+            margin: 2.5rem auto;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 40px 0 #000a, 0 1.5px 0 #5B86E5;
+            backdrop-filter: blur(18px);
+            max-width: 900px;
         }
         .section-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            background: rgba(30, 32, 54, 0.92);
+            border-radius: 20px;
+            padding: 1.7rem 1.3rem;
+            margin: 1.2rem 0;
+            border: 1.5px solid #3a3a5a;
+            box-shadow: 0 2px 16px #5B86E522;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #fa709a, #fee140);
+            background: linear-gradient(90deg, #5B86E5 0%, #36D1C4 100%);
             border: none;
-            border-radius: 10px;
+            border-radius: 14px;
             padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.08rem;
+            box-shadow: 0 2px 12px #5B86E544;
+            transition: box-shadow 0.2s, transform 0.2s;
         }
-        .loading {
-            display: none;
-        }
-        .result-section {
-            display: none;
+        .btn-primary:hover {
+            box-shadow: 0 6px 24px #36D1C488;
+            transform: translateY(-2px) scale(1.04);
         }
         .section-title {
-            color: #fa709a;
-            font-weight: 600;
+            color: #5B86E5;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 1.1rem;
         }
         .back-btn {
-            background: #6c757d;
+            background: #23234a;
             border: none;
             border-radius: 10px;
             padding: 0.5rem 1rem;
+            color: #fff;
+        }
+        .back-btn:hover {
+            background: #5B86E5;
+            color: #fff;
         }
         .chart-container {
             position: relative;
@@ -63,6 +76,9 @@
         .stock-input input {
             flex: 1;
             margin-right: 0.5rem;
+            background: #23234a;
+            color: #fff;
+            border: 1px solid #3a3a5a;
         }
         .remove-stock {
             background: #dc3545;
@@ -76,7 +92,7 @@
             justify-content: center;
         }
         .weight-bar {
-            background: #e9ecef;
+            background: #23234a;
             border-radius: 10px;
             height: 20px;
             margin: 0.5rem 0;
@@ -85,9 +101,20 @@
         }
         .weight-fill {
             height: 100%;
-            background: linear-gradient(90deg, #fa709a, #fee140);
+            background: linear-gradient(90deg, #5B86E5, #36D1C4);
             border-radius: 10px;
             transition: width 0.5s ease;
+        }
+        .text-muted { color: #b0b3c6 !important; }
+        .form-label, .form-select, .form-control { color: #e0e3f0; background: #23234a; border: 1px solid #3a3a5a; }
+        .form-control:focus, .form-select:focus { border-color: #5B86E5; box-shadow: 0 0 0 2px #5B86E544; }
+        .alert-info { background: rgba(91,134,229,0.12); color: #5B86E5; border: none; }
+        .spinner-border.text-primary { color: #5B86E5 !important; }
+        .loading {
+            display: none;
+        }
+        .result-section {
+            display: none;
         }
     </style>
 </head>
@@ -182,47 +209,6 @@
                         <button class="btn btn-outline-primary w-100" onclick="loadPortfolio('growth')">
                             <i class="fas fa-rocket me-2"></i>Growth
                         </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Section -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-lightbulb me-2"></i>Optimization Features
-                </h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Markowitz Modern Portfolio Theory
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Risk-adjusted returns optimization
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Sharpe ratio calculation
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Multiple risk tolerance levels
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Real-time market data
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Visual portfolio allocation
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>

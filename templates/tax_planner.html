@@ -3,61 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tax Planner - Finance LLM Hub</title>
+    <title>Tax Planner - AI-Powered US Tax Optimization</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --dark-bg: #0a0a0a;
+            --text-light: #fff;
+            --text-muted: #b0b0b0;
+        }
         body {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
+            background: var(--card-bg);
+            border-radius: 30px;
             margin: 2rem auto;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-width: 700px;
+            backdrop-filter: blur(24px);
         }
         .section-card {
-            background: white;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        }
+        .section-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .back-btn {
+            background: #222;
+            border: none;
+            border-radius: 12px;
+            padding: 0.5rem 1.2rem;
+            color: #fff;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .back-btn:hover {
+            background: #444;
+        }
+        .form-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
             border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            color: #fff;
+            padding: 15px 18px;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            transition: background 0.2s, border 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.18);
+            border-color: #764ba2;
+            color: #fff;
+            box-shadow: 0 0 16px #764ba233;
+        }
+        .form-control::placeholder {
+            color: #b0b0b0;
+            opacity: 0.7;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
+            background: var(--primary-gradient);
             border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
+            border-radius: 15px;
+            padding: 0.9rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 8px 24px #764ba288;
+            transform: translateY(-2px) scale(1.03);
         }
         .result-section {
             display: none;
         }
-        .section-title {
-            color: #f093fb;
-            font-weight: 600;
+        .budget-bar {
+            background: rgba(255,255,255,0.12);
+            border-radius: 8px;
+            height: 22px;
+            margin-bottom: 14px;
+            overflow: hidden;
+            position: relative;
         }
-        .back-btn {
-            background: #6c757d;
-            border: none;
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
+        .budget-bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 1s cubic-bezier(.25,.8,.25,1);
         }
-        .tax-breakdown {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 1rem 0;
+        .bar-rent { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .bar-groceries { background: linear-gradient(90deg, #43e97b, #38f9d7); }
+        .bar-entertainment { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .bar-insurance { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .bar-savings { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .bar-misc { background: linear-gradient(90deg, #b6cee8, #f578dc); }
+        .budget-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #fff;
         }
-        .recommendation-card {
-            border-left: 4px solid #f093fb;
-            background: #f8f9fa;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 0 10px 10px 0;
+        .budget-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        @media (max-width: 600px) {
+            .main-container { padding: 1rem 0.5rem; }
+            .section-card { padding: 1.2rem 0.7rem; }
+            .section-title { font-size: 1.3rem; }
+        }
+        .summary-glass-card {
+            background: rgba(255,255,255,0.10);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            border: 1.5px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(16px);
+            margin-bottom: 2rem;
+            transition: box-shadow 0.3s;
+        }
+        .summary-glass-card:hover {
+            box-shadow: 0 16px 48px rgba(0,0,0,0.28);
+        }
+        .summary-label {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 900px) {
+            .summary-glass-card .d-flex { flex-direction: column !important; }
+            .summary-item { margin-bottom: 1.5rem !important; }
         }
     </style>
 </head>
@@ -67,17 +175,16 @@
             <!-- Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h1 class="h3 mb-1">
+                    <h1 class="section-title mb-1">
                         <i class="fas fa-calculator text-primary me-2"></i>
                         Tax Planner
                     </h1>
                     <p class="text-muted">AI-powered US tax calculation and optimization</p>
                 </div>
-                <a href="/" class="btn back-btn text-white">
+                <a href="/" class="btn back-btn">
                     <i class="fas fa-arrow-left me-2"></i>Back to Home
                 </a>
             </div>
-
             <!-- Input Section -->
             <div class="section-card">
                 <h4 class="section-title mb-3">
@@ -121,7 +228,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Results Section -->
             <div class="result-section">
                 <div class="section-card">
@@ -133,14 +239,13 @@
                 <!-- Smart Budget Plan Section -->
                 <div class="section-card" id="budget-plan-section" style="display:none;">
                     <h4 class="section-title mb-3">
-                        <i class="fas fa-wallet me-2"></i>Smart Budget Plan (Monthly)
+                        <i class="fas fa-wallet me-2"></i>Smart Budget Plan (Monthly, After-Tax Income)
                     </h4>
                     <div id="budget-plan-content"></div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         async function calculateTax() {
@@ -149,22 +254,18 @@
             const investment_income = parseFloat(document.getElementById('investment_income').value);
             const age = parseInt(document.getElementById('age').value);
             const state = document.getElementById('state').value;
-            
             if (!income || income < 0) {
                 alert('Please enter a valid income amount');
                 return;
             }
-
             if (!deductions || deductions < 0) {
                 alert('Please enter a valid deduction amount');
                 return;
             }
-
             if (!age || age < 18 || age > 100) {
                 alert('Please enter a valid age (18-100)');
                 return;
             }
-
             try {
                 const response = await fetch('/calculate-tax', {
                     method: 'POST',
@@ -179,9 +280,7 @@
                         state: state
                     })
                 });
-
                 const data = await response.json();
-
                 if (data.success) {
                     displayResults(data);
                 } else {
@@ -191,76 +290,65 @@
                 alert('Error: ' + error.message);
             }
         }
-
         function displayResults(data) {
             const resultsDiv = document.getElementById('results-content');
-            
             let html = `
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Tax calculation completed successfully!
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fas fa-chart-bar me-2"></i>Tax Summary
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <p class="mb-1"><strong>Gross Income:</strong></p>
-                                        <p class="mb-1"><strong>Deductions:</strong></p>
-                                        <p class="mb-1"><strong>Taxable Income:</strong></p>
-                                        <p class="mb-1"><strong>Total Tax:</strong></p>
-                                        <p class="mb-1"><strong>Effective Rate:</strong></p>
-                                    </div>
-                                    <div class="col-6">
-                                        <p class="mb-1">$${(data.taxable_income + data.deductions).toFixed(2)}</p>
-                                        <p class="mb-1">$${data.deductions.toFixed(2)}</p>
-                                        <p class="mb-1">$${data.taxable_income.toFixed(2)}</p>
-                                        <p class="mb-1 text-danger fw-bold">$${data.tax_amount.toFixed(2)}</p>
-                                        <p class="mb-1">${data.effective_rate.toFixed(2)}%</p>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="summary-glass-card p-4 mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="summary-item mb-3 mb-md-0 flex-fill text-center">
+                            <div class="summary-label"><i class="fas fa-money-bill-wave me-2 text-info"></i>Gross Income</div>
+                            <div class="summary-value display-6 fw-bold">$${(data.taxable_income + data.deductions).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+                        </div>
+                        <div class="summary-item mb-3 mb-md-0 flex-fill text-center">
+                            <div class="summary-label"><i class="fas fa-minus-circle me-2 text-warning"></i>Deductions</div>
+                            <div class="summary-value h3 fw-bold text-warning">$${data.deductions.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+                        </div>
+                        <div class="summary-item mb-3 mb-md-0 flex-fill text-center">
+                            <div class="summary-label"><i class="fas fa-calculator me-2 text-primary"></i>Taxable Income</div>
+                            <div class="summary-value h3 fw-bold text-primary">$${data.taxable_income.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+                        </div>
+                        <div class="summary-item mb-3 mb-md-0 flex-fill text-center">
+                            <div class="summary-label"><i class="fas fa-receipt me-2 text-danger"></i>Total Tax</div>
+                            <div class="summary-value h3 fw-bold text-danger">$${data.tax_amount.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+                        </div>
+                        <div class="summary-item flex-fill text-center">
+                            <div class="summary-label"><i class="fas fa-percentage me-2 text-success"></i>Effective Rate</div>
+                            <div class="summary-value h3 fw-bold text-success">${data.effective_rate.toFixed(2)}%</div>
                         </div>
                     </div>
                 </div>
             `;
-            
             resultsDiv.innerHTML = html;
             document.querySelector('.result-section').style.display = 'block';
             // Show budget plan if present
             if (data.budget_plan) {
                 const budgetDiv = document.getElementById('budget-plan-content');
-                let budgetHtml = '<ul class="list-group">';
+                let budgetHtml = '';
+                const total = Object.values(data.budget_plan).reduce((a, b) => a + b, 0);
                 for (const [cat, val] of Object.entries(data.budget_plan)) {
-                    budgetHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                        <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
-                        <span class="fw-bold">$${val.toFixed(2)}</span>
-                    </li>`;
+                    const percent = ((val / total) * 100).toFixed(1);
+                    budgetHtml += `
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="budget-label me-2" style="min-width:110px;">${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                            <div class="budget-bar flex-grow-1 mx-2">
+                                <div class="budget-bar-fill bar-${cat}" style="width: 0%" data-width="${percent}%"></div>
+                            </div>
+                            <span class="budget-value ms-2">$${val.toFixed(2)} <span class="text-muted" style="font-size:0.95em;">(${percent}%)</span></span>
+                        </div>
+                    `;
                 }
-                budgetHtml += '</ul>';
                 budgetDiv.innerHTML = budgetHtml;
                 document.getElementById('budget-plan-section').style.display = 'block';
+                // Animate bars
+                setTimeout(() => {
+                    document.querySelectorAll('.budget-bar-fill').forEach(bar => {
+                        bar.style.width = bar.getAttribute('data-width');
+                    });
+                }, 100);
             } else {
                 document.getElementById('budget-plan-section').style.display = 'none';
             }
         }
-
-        // Enter key support
-        document.getElementById('income').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                calculateTax();
-            }
-        });
-        document.getElementById('deductions').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                calculateTax();
-            }
-        });
     </script>
 </body>
 </html> 

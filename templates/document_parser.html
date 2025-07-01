@@ -8,61 +8,91 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(ellipse at 60% 20%, #2d234a 60%, #181828 100%);
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f3f6fa;
         }
         .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            margin: 2rem auto;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            background: rgba(44, 36, 60, 0.85);
+            border-radius: 28px;
+            margin: 2.5rem auto;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 8px 40px 0 #000a, 0 1.5px 0 #764ba2;
+            backdrop-filter: blur(18px);
+            max-width: 900px;
         }
         .section-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            background: rgba(34, 26, 54, 0.92);
+            border-radius: 20px;
+            padding: 1.7rem 1.3rem;
+            margin: 1.2rem 0;
+            border: 1.5px solid #3a2a5a;
+            box-shadow: 0 2px 16px #764ba222;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 14px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            font-size: 1.08rem;
+            box-shadow: 0 2px 12px #764ba244;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 24px #764ba288;
+            transform: translateY(-2px) scale(1.04);
+        }
+        .section-title {
+            color: #764ba2;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            margin-bottom: 1.1rem;
+        }
+        .back-btn {
+            background: #2d234a;
             border: none;
             border-radius: 10px;
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
+            color: #fff;
         }
+        .back-btn:hover {
+            background: #764ba2;
+            color: #fff;
+        }
+        .form-label, .form-select, .form-control { color: #e0e3f0; background: #2d234a; border: 1px solid #3a2a5a; }
+        .form-control:focus, .form-select:focus { border-color: #764ba2; box-shadow: 0 0 0 2px #764ba244; }
+        .alert-info { background: rgba(118,75,162,0.12); color: #764ba2; border: none; }
+        .spinner-border.text-primary { color: #764ba2 !important; }
+        .chunk-preview {
+            background: #23234a;
+            color: #e0e3f0;
+            border-left: 4px solid #764ba2;
+            margin-bottom: 1.1rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #764ba222;
+            padding: 1rem 1.2rem;
+        }
+        .chunk-preview + .chunk-preview {
+            margin-top: 1.1rem;
+        }
+        .score-badge { background: #764ba2; color: white; }
+        .text-muted { color: #b0b3c6 !important; }
         .loading {
             display: none;
         }
         .result-section {
             display: none;
         }
-        .section-title {
-            color: #667eea;
-            font-weight: 600;
-        }
-        .back-btn {
-            background: #6c757d;
-            border: none;
+        #ai-summary {
+            background: #f3f6fa;
+            color: #2d234a;
             border-radius: 10px;
-            padding: 0.5rem 1rem;
-        }
-        .chunk-preview {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid #667eea;
-        }
-        .score-badge {
-            background: #667eea;
-            color: white;
-            border-radius: 8px;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.95rem;
-            margin-left: 0.5rem;
+            padding: 1rem 1.2rem;
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
         }
     </style>
 </head>
@@ -148,47 +178,6 @@
                     <div class="mb-3">
                         <h6 class="fw-bold">Chunks Summary</h6>
                         <p id="ai-summary" class="text-dark"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Section -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-lightbulb me-2"></i>What This Tool Does
-                </h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Uploads and parses txt, pdf, docx, html files
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Chunks document for efficient retrieval
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Embeds and indexes with sentence-transformers
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                RAG: Retrieval-Augmented Generation search
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Ranks and previews the most relevant parts
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Fast, in-memory processing
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
