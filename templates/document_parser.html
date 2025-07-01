@@ -140,6 +140,16 @@
                     </h4>
                     <div id="results-content"></div>
                 </div>
+                <!-- New: AI Summary, Insights, Visualization -->
+                <div class="section-card" id="ai-insights-section" style="display:none;">
+                    <h4 class="section-title mb-3">
+                        <i class="fas fa-brain me-2"></i>Chunks Summary
+                    </h4>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Chunks Summary</h6>
+                        <p id="ai-summary" class="text-dark"></p>
+                    </div>
+                </div>
             </div>
 
             <!-- Features Section -->
@@ -186,6 +196,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Check session on page load
         window.addEventListener('load', async function() {
@@ -314,6 +325,7 @@
                             '<i class="fas fa-search me-2"></i>' +
                             'No relevant chunks found for your query: "<strong>' + query + '</strong>"' +
                             '</div>';
+                        document.getElementById('ai-insights-section').style.display = 'none';
                     } else {
                         let html = `<div class="mb-3">
                             <h6 class="text-muted">Query: "${query}" - Found ${data.total_results} results</h6>
@@ -329,12 +341,16 @@
                             </div>`;
                         });
                         resultsDiv.innerHTML = html;
+                        // --- Render AI summary, insights, and word freq ---
+                        document.getElementById('ai-insights-section').style.display = 'block';
+                        document.getElementById('ai-summary').textContent = data.ai_summary || 'No summary available.';
                     }
                 } else {
                     resultsDiv.innerHTML = `<div class='alert alert-danger'>
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         ${data.error || 'Query failed.'}
                     </div>`;
+                    document.getElementById('ai-insights-section').style.display = 'none';
                 }
             } catch (err) {
                 resultsDiv.innerHTML = `<div class='alert alert-danger'>

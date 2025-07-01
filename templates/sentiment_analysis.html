@@ -3,229 +3,633 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentiment Analysis - Finance LLM Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Financial Sentiment Analysis - AI-Powered Insights</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-light: #ffffff;
+            --text-muted: #b0b0b0;
+        }
+
         body {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
         }
-        .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            margin: 2rem auto;
-            padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        .section-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #43e97b, #38f9d7);
-            border: none;
-            border-radius: 10px;
-            padding: 0.75rem 1.5rem;
-        }
-        .loading {
-            display: none;
-        }
-        .result-section {
-            display: none;
-        }
-        .section-title {
-            color: #43e97b;
-            font-weight: 600;
-        }
-        .back-btn {
-            background: #6c757d;
-            border: none;
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-        }
-        .sentiment-meter {
-            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #1dd1a1);
-            height: 20px;
-            border-radius: 10px;
+
+        .hero-section {
+            background: var(--primary-gradient);
+            padding: 80px 0;
             position: relative;
-            margin: 1rem 0;
+            overflow: hidden;
         }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #b0b0b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sentiment-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sentiment-card:hover {
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .sentiment-positive {
+            border-left: 4px solid #4facfe;
+        }
+
+        .sentiment-negative {
+            border-left: 4px solid #fa709a;
+        }
+
+        .sentiment-neutral {
+            border-left: 4px solid #43e97b;
+        }
+
+        .sentiment-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-positive {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .badge-negative {
+            background: var(--danger-gradient);
+            color: white;
+        }
+
+        .badge-neutral {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .market-overview {
+            background: var(--secondary-gradient);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .market-overview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .sentiment-meter {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            position: relative;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
         .sentiment-indicator {
             position: absolute;
-            top: -5px;
-            width: 10px;
-            height: 30px;
-            background: #333;
-            border-radius: 5px;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: white;
+            border-radius: 2px;
             transition: left 0.5s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
-        .phrase-tag {
-            display: inline-block;
-            background: #e9ecef;
-            padding: 0.25rem 0.5rem;
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-positive { background: var(--success-gradient); }
+        .progress-neutral { background: var(--warning-gradient); }
+        .progress-negative { background: var(--danger-gradient); }
+
+        .news-feed {
+            max-height: 600px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+
+        .news-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .news-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .news-feed::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .btn-modern {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .form-control-modern {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 15px;
-            margin: 0.25rem;
-            font-size: 0.875rem;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1rem;
         }
-        .insight-card {
-            border-left: 4px solid #43e97b;
-            background: #f8f9fa;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-radius: 0 10px 10px 0;
+
+        .form-control-modern:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
+
+        .form-control-modern::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .news-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .news-clickable { cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; }
+        .news-clickable:hover { box-shadow: 0 8px 32px rgba(100,100,255,0.15), 0 1.5px 8px rgba(0,0,0,0.12); transform: translateY(-2px) scale(1.01); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="main-container">
-            <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="h3 mb-1">
-                        <i class="fas fa-brain text-primary me-2"></i>
-                        Sentiment Analysis
-                    </h1>
-                    <p class="text-muted">AI-powered text sentiment analysis and insights</p>
-                </div>
-                <a href="/" class="btn back-btn text-white">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Home
-                </a>
-            </div>
-
-            <!-- Input Section -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-edit me-2"></i>Text Analysis
-                </h4>
-                <div class="mb-3">
-                    <label for="text" class="form-label">Enter text to analyze</label>
-                    <textarea class="form-control" id="text" rows="6" placeholder="Enter any text, news article, social media post, or financial report for sentiment analysis..."></textarea>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">Character count: <span id="charCount">0</span></small>
-                    <button class="btn btn-primary" onclick="analyzeSentiment()">
-                        <i class="fas fa-brain me-2"></i>Analyze Sentiment
-                    </button>
-                </div>
-            </div>
-
-            <!-- Loading Section -->
-            <div class="loading text-center py-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-3 text-muted">Analyzing sentiment... Please wait.</p>
-            </div>
-
-            <!-- Results Section -->
-            <div class="result-section">
-                <div class="section-card">
-                    <h4 class="section-title mb-3">
-                        <i class="fas fa-chart-bar me-2"></i>Analysis Results
-                    </h4>
-                    <div id="results-content"></div>
-                </div>
-            </div>
-
-            <!-- Sample Texts -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-lightbulb me-2"></i>Sample Texts
-                </h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Positive Example:</h6>
-                        <p class="text-muted small">"Apple's latest earnings report exceeded expectations with strong iPhone sales and growing services revenue. The company's innovative approach continues to drive shareholder value."</p>
-                        <button class="btn btn-sm btn-outline-success" onclick="loadSample('positive')">Try This</button>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Negative Example:</h6>
-                        <p class="text-muted small">"The company's disappointing quarterly results and declining market share have raised concerns among investors. Management's strategy appears to be failing."</p>
-                        <button class="btn btn-sm btn-outline-danger" onclick="loadSample('negative')">Try This</button>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Neutral Example:</h6>
-                        <p class="text-muted small">"The stock market showed mixed results today with technology stocks gaining while energy stocks declined. Trading volume was average."</p>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="loadSample('neutral')">Try This</button>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Financial News:</h6>
-                        <p class="text-muted small">"Federal Reserve announces new interest rate policy. Markets react with cautious optimism as inflation concerns persist."</p>
-                        <button class="btn btn-sm btn-outline-info" onclick="loadSample('news')">Try This</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Section -->
-            <div class="section-card">
-                <h4 class="section-title mb-3">
-                    <i class="fas fa-cogs me-2"></i>Analysis Features
-                </h4>
-                <div class="row">
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Sentiment polarity analysis
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Subjectivity assessment
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Key phrase extraction
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <ul class="list-unstyled">
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                AI-powered insights
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Real-time analysis
-                            </li>
-                            <li class="mb-2">
-                                <i class="fas fa-check text-success me-2"></i>
-                                Multiple text formats
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+    <!-- Back to Home Button -->
+    <div class="container-fluid pt-3 pb-1 d-flex justify-content-end">
+        <a href="/" class="btn btn-modern" style="min-width: 120px;">
+            <i class="fas fa-arrow-left me-2"></i>Home
+        </a>
+    </div>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="display-4 fw-bold mb-4">
+                    <i class="fas fa-chart-line me-3"></i>
+                    Financial Sentiment Analysis
+                </h1>
+                <p class="lead mb-0">AI-Powered Market Sentiment Insights</p>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container mt-5">
+        <!-- Market Sentiment Overview -->
+        <div class="market-overview">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h3 class="mb-3">
+                        <i class="fas fa-globe me-2"></i>
+                        Market Sentiment Overview
+                    </h3>
+                    <div id="market-sentiment-display">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="loading-spinner me-3"></div>
+                            <span>Analyzing market sentiment...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="sentiment-stats">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="h4 mb-1" id="positive-percent">-</div>
+                                <small class="text-muted">Positive</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h4 mb-1" id="neutral-percent">-</div>
+                                <small class="text-muted">Neutral</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h4 mb-1" id="negative-percent">-</div>
+                                <small class="text-muted">Negative</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial News Feed -->
+        <div class="section-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="section-title mb-0">
+                    <i class="fas fa-newspaper me-2"></i>Live Financial News
+                </h4>
+                <button class="btn btn-modern" onclick="refreshNews()">
+                    <i class="fas fa-sync-alt me-2"></i>Refresh
+                </button>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="category-filter">
+                <div class="filter-btn active" data-category="all">All News</div>
+                <div class="filter-btn" data-category="Earnings">Earnings</div>
+                <div class="filter-btn" data-category="Technology">Technology</div>
+                <div class="filter-btn" data-category="Monetary Policy">Monetary Policy</div>
+                <div class="filter-btn" data-category="M&A">M&A</div>
+                <div class="filter-btn" data-category="Cryptocurrency">Crypto</div>
+            </div>
+
+            <div id="news-feed" class="news-feed">
+                <div class="text-center py-5">
+                    <div class="loading-spinner mb-3"></div>
+                    <p>Loading financial news...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Text Analysis -->
+        <div class="section-card">
+            <h4 class="section-title">
+                <i class="fas fa-edit me-2"></i>Custom Text Analysis
+            </h4>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <textarea id="text" class="form-control form-control-modern" rows="6" 
+                                placeholder="Enter your text here for sentiment analysis..."></textarea>
+                    </div>
+                    <button class="btn btn-modern" onclick="analyzeSentiment()">
+                        <i class="fas fa-brain me-2"></i>Analyze Sentiment
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <div class="section-card">
+                        <h6 class="mb-3">
+                            <i class="fas fa-lightbulb me-2"></i>Sample Texts
+                        </h6>
+                        <div class="mb-2">
+                            <button class="btn btn-sm btn-outline-light w-100 mb-2" onclick="loadSample('positive')">
+                                Positive Example
+                            </button>
+                            <button class="btn btn-sm btn-outline-light w-100 mb-2" onclick="loadSample('negative')">
+                                Negative Example
+                            </button>
+                            <button class="btn btn-sm btn-outline-light w-100" onclick="loadSample('neutral')">
+                                Neutral Example
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-content" class="mt-4"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Character counter
-        document.getElementById('text').addEventListener('input', function() {
-            document.getElementById('charCount').textContent = this.value.length;
+        // Global variables
+        let currentNews = [];
+        let currentFilter = 'all';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMarketSentiment();
+            loadFinancialNews();
+            setupCategoryFilters();
         });
 
-        async function analyzeSentiment() {
-            const text = document.getElementById('text').value.trim();
+        // Load market sentiment overview
+        async function loadMarketSentiment() {
+            try {
+                const response = await fetch('/get-news-sentiment-summary');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const display = document.getElementById('market-sentiment-display');
+                    display.innerHTML = `
+                        <h4 class="mb-2">${data.overall_sentiment}</h4>
+                        <p class="mb-3">${data.sentiment_description}</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="progress-bar-custom">
+                                    <div class="progress-fill progress-positive" style="width: ${data.sentiment_percentages.positive}%"></div>
+                                </div>
+                                <small class="text-muted">Positive</small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="progress-bar-custom">
+                                    <div class="progress-fill progress-neutral" style="width: ${data.sentiment_percentages.neutral}%"></div>
+                                </div>
+                                <small class="text-muted">Neutral</small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="progress-bar-custom">
+                                    <div class="progress-fill progress-negative" style="width: ${data.sentiment_percentages.negative}%"></div>
+                                </div>
+                                <small class="text-muted">Negative</small>
+                            </div>
+                        </div>
+                    `;
+
+                    // Update percentages
+                    document.getElementById('positive-percent').textContent = data.sentiment_percentages.positive + '%';
+                    document.getElementById('neutral-percent').textContent = data.sentiment_percentages.neutral + '%';
+                    document.getElementById('negative-percent').textContent = data.sentiment_percentages.negative + '%';
+                }
+            } catch (error) {
+                console.error('Error loading market sentiment:', error);
+            }
+        }
+
+        // Load financial news
+        async function loadFinancialNews() {
+            try {
+                const response = await fetch('/get-financial-news');
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentNews = data.news;
+                    displayNews(currentNews);
+                }
+            } catch (error) {
+                console.error('Error loading news:', error);
+                document.getElementById('news-feed').innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle text-warning mb-3" style="font-size: 2rem;"></i>
+                        <p>Error loading news. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Display news items
+        function displayNews(newsItems) {
+            const feed = document.getElementById('news-feed');
             
-            if (!text) {
-                alert('Please enter some text to analyze');
+            if (newsItems.length === 0) {
+                feed.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-newspaper text-muted mb-3" style="font-size: 2rem;"></i>
+                        <p>No news available for this category.</p>
+                    </div>
+                `;
                 return;
             }
 
-            // Show loading
-            document.querySelector('.loading').style.display = 'block';
-            document.querySelector('.result-section').style.display = 'none';
+            feed.innerHTML = newsItems.map(item => `
+                <a href="${item.url}" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="sentiment-card sentiment-${item.sentiment.toLowerCase()} fade-in news-clickable">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="sentiment-badge badge-${item.sentiment.toLowerCase()}">${item.sentiment}</span>
+                        <small class="text-muted">${item.category}</small>
+                    </div>
+                    <h6 class="mb-2">${item.title}</h6>
+                    <p class="text-muted mb-2">${item.summary}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1 me-3">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill progress-${item.sentiment.toLowerCase()}" 
+                                     style="width: ${item.confidence}%"></div>
+                            </div>
+                        </div>
+                        <small class="text-muted">${item.confidence}% confidence</small>
+                    </div>
+                    <div class="news-time">
+                        <i class="fas fa-clock me-1"></i>
+                        ${formatTime(item.time_published)} • ${item.source}
+                    </div>
+                </div>
+                </a>
+            `).join('');
+        }
+
+        // Setup category filters
+        function setupCategoryFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    currentFilter = category;
+                    
+                    // Filter news
+                    if (category === 'all') {
+                        displayNews(currentNews);
+                    } else {
+                        const filteredNews = currentNews.filter(item => item.category === category);
+                        displayNews(filteredNews);
+                    }
+                });
+            });
+        }
+
+        // Refresh news
+        function refreshNews() {
+            loadMarketSentiment();
+            loadFinancialNews();
+        }
+
+        // Format time
+        function formatTime(timeString) {
+            if (!timeString) return 'Unknown';
+            const date = new Date(timeString);
+            const now = new Date();
+            const diff = now - date;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            
+            if (hours < 1) return 'Just now';
+            if (hours < 24) return `${hours}h ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Load sample text
+        function loadSample(type) {
+            const samples = {
+                positive: "Apple's latest earnings report exceeded expectations with strong iPhone sales and growing services revenue. The company's innovative approach continues to drive shareholder value.",
+                negative: "The company's disappointing quarterly results and declining market share have raised concerns among investors. Management's strategy appears to be failing.",
+                neutral: "Federal Reserve announces new interest rate policy. Markets react with cautious optimism as inflation concerns persist."
+            };
+            document.getElementById('text').value = samples[type];
+        }
+
+        // Analyze sentiment
+        async function analyzeSentiment() {
+            const text = document.getElementById('text').value.trim();
+            if (!text) {
+                alert('Please enter text to analyze');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('results-content');
+            resultsDiv.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="loading-spinner mb-3"></div>
+                    <p>Analyzing sentiment...</p>
+                </div>
+            `;
 
             try {
                 const response = await fetch('/analyze-sentiment', {
@@ -237,143 +641,104 @@
                 });
 
                 const data = await response.json();
-
+                
                 if (data.success) {
                     displayResults(data);
                 } else {
-                    throw new Error(data.error || 'Analysis failed');
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            ${data.error}
+                        </div>
+                    `;
                 }
             } catch (error) {
-                alert('Error: ' + error.message);
-            } finally {
-                document.querySelector('.loading').style.display = 'none';
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Error analyzing sentiment. Please try again.
+                    </div>
+                `;
             }
         }
 
+        // Display sentiment analysis results
         function displayResults(data) {
+            // Clamp the slider pointer between 0% and 96%
+            let sentimentPosition = ((data.sentiment_score + 1) / 2) * 100;
+            sentimentPosition = Math.max(0, Math.min(sentimentPosition, 96));
             const resultsDiv = document.getElementById('results-content');
             
-            // Calculate sentiment position (0 to 100)
-            const sentimentPosition = ((data.sentiment_score + 1) / 2) * 100;
-            
-            let html = `
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Sentiment analysis completed successfully!
-                </div>
-                
+            resultsDiv.innerHTML = `
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-primary text-white">
-                                <i class="fas fa-chart-pie me-2"></i>Sentiment Overview
-                            </div>
-                            <div class="card-body">
+                        <div class="section-card">
+                            <div class="text-center">
                                 <h5 class="card-title">${data.sentiment}</h5>
                                 <p class="card-text">
                                     <strong>Sentiment Score:</strong> ${data.sentiment_score}<br>
-                                    <strong>Subjectivity:</strong> ${data.subjectivity_score}<br>
-                                    <strong>Confidence:</strong> ${Math.abs(data.sentiment_score * 100).toFixed(1)}%
+                                    <strong>Confidence:</strong> ${data.confidence}%
                                 </p>
-                                
                                 <div class="sentiment-meter">
                                     <div class="sentiment-indicator" style="left: ${sentimentPosition}%;"></div>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <small>Negative</small>
-                                    <small>Neutral</small>
-                                    <small>Positive</small>
+                                    <span>Negative</span>
+                                    <span>Neutral</span>
+                                    <span>Positive</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card mb-3">
-                            <div class="card-header bg-success text-white">
-                                <i class="fas fa-tags me-2"></i>Key Phrases
-                            </div>
-                            <div class="card-body">
-                                ${data.key_phrases.map(phrase => `
-                                    <span class="phrase-tag">${phrase}</span>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header bg-info text-white">
-                                <i class="fas fa-lightbulb me-2"></i>AI Insights
-                            </div>
-                            <div class="card-body">
-                                ${data.insights.map(insight => `
-                                    <div class="insight-card">
-                                        <i class="fas fa-arrow-right text-primary me-2"></i>
-                                        ${insight}
-                                    </div>
-                                `).join('')}
-                            </div>
+                        <div class="section-card">
+                            <h6 class="mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Analysis Details
+                            </h6>
+                            <p><strong>Text Length:</strong> ${document.getElementById('text').value.length} characters</p>
+                            <p><strong>Word Count:</strong> ${document.getElementById('text').value.split(' ').length} words</p>
+                            <p><strong>Analysis Time:</strong> < 1 second</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="row mt-3">
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header bg-warning text-dark">
-                                <i class="fas fa-info-circle me-2"></i>Analysis Details
-                            </div>
-                            <div class="card-body">
-                                <p><strong>Text Length:</strong> ${document.getElementById('text').value.length} characters</p>
-                                <p><strong>Word Count:</strong> ${document.getElementById('text').value.split(' ').length} words</p>
-                                <p><strong>Analysis Time:</strong> < 1 second</p>
-                                <p><strong>Model:</strong> TextBlob NLP</p>
+                        <div class="section-card">
+                            <h6 class="mb-3">
+                                <i class="fas fa-key me-2"></i>Key Phrases
+                            </h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                ${data.key_phrases.map(phrase => 
+                                    `<span class="badge bg-light text-dark">${phrase}</span>`
+                                ).join('')}
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header bg-secondary text-white">
-                                <i class="fas fa-chart-line me-2"></i>Sentiment Distribution
-                            </div>
-                            <div class="card-body">
-                                <div class="progress mb-2">
-                                    <div class="progress-bar bg-danger" style="width: ${Math.max(0, -data.sentiment_score * 50)}%">Negative</div>
-                                    <div class="progress-bar bg-warning" style="width: ${Math.max(0, (1 - Math.abs(data.sentiment_score)) * 50)}%">Neutral</div>
-                                    <div class="progress-bar bg-success" style="width: ${Math.max(0, data.sentiment_score * 50)}%">Positive</div>
-                                </div>
-                                <small class="text-muted">Sentiment distribution across the analyzed text</small>
-                            </div>
+                        <div class="section-card">
+                            <h6 class="mb-3">
+                                <i class="fas fa-lightbulb me-2"></i>Insights
+                            </h6>
+                            <ul class="list-unstyled">
+                                ${data.insights.map(insight => 
+                                    `<li><i class="fas fa-arrow-right me-2"></i>${insight}</li>`
+                                ).join('')}
+                            </ul>
                         </div>
                     </div>
                 </div>
             `;
-            
-            resultsDiv.innerHTML = html;
-            document.querySelector('.result-section').style.display = 'block';
         }
 
-        function loadSample(type) {
-            const samples = {
-                positive: "Apple's latest earnings report exceeded expectations with strong iPhone sales and growing services revenue. The company's innovative approach continues to drive shareholder value.",
-                negative: "The company's disappointing quarterly results and declining market share have raised concerns among investors. Management's strategy appears to be failing.",
-                neutral: "The stock market showed mixed results today with technology stocks gaining while energy stocks declined. Trading volume was average.",
-                news: "Federal Reserve announces new interest rate policy. Markets react with cautious optimism as inflation concerns persist."
-            };
-            
-            document.getElementById('text').value = samples[type];
-            document.getElementById('charCount').textContent = samples[type].length;
-        }
-
-        // Enter key support (Ctrl+Enter for new line, Enter for analysis)
-        document.getElementById('text').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.ctrlKey) {
-                e.preventDefault();
-                analyzeSentiment();
-            }
-        });
+        // Add CSS for clickable news cards
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .news-clickable { cursor: pointer; transition: box-shadow 0.2s, transform 0.2s; }
+            .news-clickable:hover { box-shadow: 0 8px 32px rgba(100,100,255,0.15), 0 1.5px 8px rgba(0,0,0,0.12); transform: translateY(-2px) scale(1.01); }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
+</html> 
 </html> 
