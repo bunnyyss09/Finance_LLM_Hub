@@ -28,6 +28,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 from bs4 import BeautifulSoup
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from finance_agent import ask_finance_agent
 try:
     import spacy
     nlp = spacy.load('en_core_web_sm')
@@ -61,11 +62,10 @@ except Exception as e:
     finbert_pipe = None
     print(f"Warning: Could not load FinBERT: {e}")
 
-# Load fine-tuned RoBERTa model and tokenizer once
-SENTIMENT_MODEL_PATH = 'results/saved_model'
-sentiment_tokenizer = AutoTokenizer.from_pretrained(SENTIMENT_MODEL_PATH)
-sentiment_model = AutoModelForSequenceClassification.from_pretrained(SENTIMENT_MODEL_PATH)
-label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
+# SENTIMENT_MODEL_PATH = 'results/saved_model'
+# sentiment_tokenizer = AutoTokenizer.from_pretrained(SENTIMENT_MODEL_PATH)
+# sentiment_model = AutoModelForSequenceClassification.from_pretrained(SENTIMENT_MODEL_PATH)
+# label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
 
 # Helper: check allowed file
 def allowed_file(filename):
@@ -954,6 +954,40 @@ def generate_trading_insights(sentiment_score, entities):
         insights.append("Monitor for follow-up news and market reactions")
     
     return insights
+
+@app.route('/ask-agent', methods=['POST'])
+def ask_agent():
+    data = request.get_json()
+    query = data.get('query', '')
+    if not query:
+        return jsonify({'error': 'No query provided'}), 400
+    try:
+        # Capture the full output including thinking process
+        import io
+        import sys
+        
+        # Redirect stdout to capture the agent's output
+        old_stdout = sys.stdout
+        new_stdout = io.StringIO()
+        sys.stdout = new_stdout
+        
+        try:
+            answer = ask_finance_agent(query)
+            # Get the captured output (thinking process)
+            thinking_process = new_stdout.getvalue()
+        finally:
+            sys.stdout = old_stdout
+        
+        return jsonify({
+            'answer': answer,
+            'thinking_process': thinking_process
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/finance-agent')
+def finance_agent():
+    return render_template('finance_agent.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000) 
