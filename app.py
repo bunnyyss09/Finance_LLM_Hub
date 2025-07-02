@@ -62,10 +62,10 @@ except Exception as e:
     finbert_pipe = None
     print(f"Warning: Could not load FinBERT: {e}")
 
-# SENTIMENT_MODEL_PATH = 'results/saved_model'
-# sentiment_tokenizer = AutoTokenizer.from_pretrained(SENTIMENT_MODEL_PATH)
-# sentiment_model = AutoModelForSequenceClassification.from_pretrained(SENTIMENT_MODEL_PATH)
-# label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
+SENTIMENT_MODEL_PATH = 'results/saved_model'
+sentiment_tokenizer = AutoTokenizer.from_pretrained(SENTIMENT_MODEL_PATH)
+sentiment_model = AutoModelForSequenceClassification.from_pretrained(SENTIMENT_MODEL_PATH)
+label_map = {0: 'Negative', 1: 'Neutral', 2: 'Positive'}
 
 # Helper: check allowed file
 def allowed_file(filename):
@@ -482,6 +482,8 @@ def get_financial_news():
             summary = item.get('summary', '')
             text_to_analyze = f"{title}. {summary}"
             sentiment_result = analyze_text_sentiment(text_to_analyze)
+            # Use categorize_news to determine the category
+            category = categorize_news(title, summary)
             news_items.append({
                 'title': title,
                 'summary': summary[:200] + "..." if len(summary) > 200 else summary,
@@ -490,7 +492,7 @@ def get_financial_news():
                 'source': item.get('source', ''),
                 'sentiment': sentiment_result['sentiment'],
                 'confidence': sentiment_result['confidence'],
-                'category': 'Company',
+                'category': category,
                 'tickers': [symbol]
             })
         return jsonify({
@@ -544,11 +546,12 @@ def get_news_sentiment_summary():
             text = f"{title}. {summary}"
             sentiment_result = analyze_text_sentiment(text)
             sentiment = sentiment_result['sentiment'].lower()
-            sentiments[sentiment] += 1
-            category = 'Company'
+            # Use categorize_news to determine the category
+            category = categorize_news(title, summary)
             if category not in categories:
                 categories[category] = {'positive': 0, 'neutral': 0, 'negative': 0}
             categories[category][sentiment] += 1
+            sentiments[sentiment] += 1
         total = sum(sentiments.values())
         if total > 0:
             sentiment_percentages = {
@@ -855,105 +858,6 @@ def optimize_moderate(returns, cov):
 def optimize_aggressive(returns, cov):
     weights = returns / returns.sum()
     return pd.Series(weights, index=returns.index)
-
-# 6. Financial News Analyzer (Additional Functionality)
-@app.route('/news-analyzer')
-def news_analyzer():
-    return render_template('news_analyzer.html')
-
-@app.route('/analyze-news', methods=['POST'])
-def analyze_news():
-    try:
-        data = request.get_json()
-        news_text = data.get('news_text', '')
-        
-        if not news_text:
-            return jsonify({'error': 'Please provide news text'})
-        
-        # Analyze sentiment
-        blob = TextBlob(news_text)
-        sentiment_score = blob.sentiment.polarity
-        
-        # Extract financial entities
-        financial_entities = extract_financial_entities(news_text)
-        
-        # Analyze market impact
-        market_impact = analyze_market_impact(sentiment_score, financial_entities)
-        
-        # Generate trading insights
-        trading_insights = generate_trading_insights(sentiment_score, financial_entities)
-        
-        return jsonify({
-            'success': True,
-            'sentiment_score': round(sentiment_score, 3),
-            'financial_entities': financial_entities,
-            'market_impact': market_impact,
-            'trading_insights': trading_insights
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-def extract_financial_entities(text):
-    """Extract financial entities from text"""
-    entities = {
-        'companies': [],
-        'currencies': [],
-        'numbers': [],
-        'keywords': []
-    }
-    
-    # Extract company names (simple pattern)
-    company_pattern = r'\b[A-Z]{2,}\b'
-    entities['companies'] = re.findall(company_pattern, text)[:5]
-    
-    # Extract currency mentions
-    currency_pattern = r'\$\d+|\d+\s*(?:USD|EUR|GBP|INR)'
-    entities['currencies'] = re.findall(currency_pattern, text)
-    
-    # Extract numbers
-    number_pattern = r'\d+(?:\.\d+)?%?'
-    entities['numbers'] = re.findall(number_pattern, text)[:10]
-    
-    # Extract financial keywords
-    keywords = ['revenue', 'profit', 'loss', 'earnings', 'stock', 'market', 'investment', 'dividend']
-    entities['keywords'] = [word for word in keywords if word.lower() in text.lower()]
-    
-    return entities
-
-def analyze_market_impact(sentiment_score, entities):
-    """Analyze potential market impact"""
-    impact = "Neutral"
-    
-    if sentiment_score > 0.3:
-        impact = "Potentially Bullish"
-    elif sentiment_score < -0.3:
-        impact = "Potentially Bearish"
-    
-    if len(entities['companies']) > 0:
-        impact += f" - Affects: {', '.join(entities['companies'][:3])}"
-    
-    return impact
-
-def generate_trading_insights(sentiment_score, entities):
-    """Generate trading insights"""
-    insights = []
-    
-    if sentiment_score > 0.5:
-        insights.append("Consider bullish positions on mentioned companies")
-    elif sentiment_score < -0.5:
-        insights.append("Consider defensive positions or short opportunities")
-    
-    if 'earnings' in entities['keywords']:
-        insights.append("Monitor earnings announcements and guidance")
-    
-    if 'dividend' in entities['keywords']:
-        insights.append("Watch for dividend-related news and policy changes")
-    
-    if not insights:
-        insights.append("Monitor for follow-up news and market reactions")
-    
-    return insights
 
 @app.route('/ask-agent', methods=['POST'])
 def ask_agent():
