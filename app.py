@@ -866,26 +866,8 @@ def ask_agent():
     if not query:
         return jsonify({'error': 'No query provided'}), 400
     try:
-        # Capture the full output including thinking process
-        import io
-        import sys
-        
-        # Redirect stdout to capture the agent's output
-        old_stdout = sys.stdout
-        new_stdout = io.StringIO()
-        sys.stdout = new_stdout
-        
-        try:
-            answer = ask_finance_agent(query)
-            # Get the captured output (thinking process)
-            thinking_process = new_stdout.getvalue()
-        finally:
-            sys.stdout = old_stdout
-        
-        return jsonify({
-            'answer': answer,
-            'thinking_process': thinking_process
-        })
+        answer = ask_finance_agent(query)
+        return jsonify({'answer': answer})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
