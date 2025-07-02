@@ -375,30 +375,27 @@
                         removeTypingIndicator();
                         
                         if (data.answer) {
-                            // Use the thinking process from backend if available
-                            let thinkingProcess = data.thinking_process || '';
-                            let finalAnswer = data.answer;
+                            // Parse the answer to extract thinking process and final answer
+                            const lines = data.answer.split('\n');
+                            let thinkingProcess = '';
+                            let finalAnswer = '';
+                            let inThinking = false;
+                            let inExecution = false;
                             
-                            // If no thinking process from backend, try to parse it from answer
-                            if (!thinkingProcess) {
-                                const lines = data.answer.split('\n');
-                                let inThinking = false;
-                                
-                                for (let line of lines) {
-                                    if (line.includes('Step') || line.includes('Calling tool') || 
-                                        line.includes('Observations') || line.includes('Execution logs') ||
-                                        line.includes('New run') || line.includes('╭─') || line.includes('╰─') ||
-                                        line.includes('━━━') || line.includes('│') || line.includes('─')) {
-                                        inThinking = true;
-                                        thinkingProcess += line + '\n';
-                                    } else if (line.includes('Final answer:') || line.includes('Out - Final answer:')) {
-                                        inThinking = false;
-                                        finalAnswer = line.replace('Final answer:', '').replace('Out - Final answer:', '').trim() + '\n';
-                                    } else if (inThinking) {
-                                        thinkingProcess += line + '\n';
-                                    } else {
-                                        finalAnswer += line + '\n';
-                                    }
+                            for (let line of lines) {
+                                if (line.includes('Step') || line.includes('Calling tool') || 
+                                    line.includes('Observations') || line.includes('Execution logs') ||
+                                    line.includes('New run') || line.includes('╭─') || line.includes('╰─') ||
+                                    line.includes('━━━') || line.includes('│') || line.includes('─')) {
+                                    inThinking = true;
+                                    thinkingProcess += line + '\n';
+                                } else if (line.includes('Final answer:') || line.includes('Out - Final answer:')) {
+                                    inThinking = false;
+                                    finalAnswer += line.replace('Final answer:', '').replace('Out - Final answer:', '').trim() + '\n';
+                                } else if (inThinking) {
+                                    thinkingProcess += line + '\n';
+                                } else {
+                                    finalAnswer += line + '\n';
                                 }
                             }
                             
