@@ -171,7 +171,7 @@ def market_trend_predictor(ticker: str) -> str:
     confidence = model.predict_proba([[latest_change]])[0][pred]
     trend = "UP" if pred == 1 else "DOWN"
     return (
-        f"Predicted short-term trend for {ticker.upper()}: **{trend}** "
+        f"Predicted short-term trend for {ticker.upper()}: *{trend}* "
         f"(Confidence: {confidence:.2%})"
     )
 
@@ -246,4 +246,4 @@ def ask_finance_agent(query: str) -> str:
     """
     Run the manager agent with the given query and return the answer as a string.
     """
-    return manager_agent.run(query) 
+    return manager_agent.run(query)

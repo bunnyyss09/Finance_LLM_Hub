@@ -243,6 +243,11 @@
                     </h4>
                     <div id="budget-plan-content"></div>
                 </div>
+                <!-- Only show the improved summary, remove sentiment section -->
+                <div id="tax-summary-section" style="margin-top: 1em; display: none;">
+                    <h4>Summary</h4>
+                    <p id="tax-summary-text"></p>
+                </div>
             </div>
         </div>
     </div>
@@ -347,6 +352,12 @@
                 }, 100);
             } else {
                 document.getElementById('budget-plan-section').style.display = 'none';
+            }
+            if (data.summary) {
+                document.getElementById('tax-summary-section').style.display = '';
+                document.getElementById('tax-summary-text').textContent = data.summary;
+            } else {
+                document.getElementById('tax-summary-section').style.display = 'none';
             }
         }
     </script>

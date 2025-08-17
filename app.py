@@ -355,13 +355,23 @@ def calculate_tax():
             'misc': 0.1
         }
         budget_plan = {cat: round(monthly_taxable_income * w, 2) for cat, w in budget_weights.items()}
+        # --- Improved summary (no sentiment) ---
+        summary = (
+            f"Based on your total income of ₹{income:,.2f} and deductions of ₹{deductions:,.2f}, "
+            f"your taxable income is ₹{taxable_income:,.2f}. Your total tax liability is ₹{optimized_tax:,.2f}, "
+            f"resulting in an effective tax rate of {effective_rate:.2f}%. "
+            f"After tax and deductions, your suggested monthly budget allocation is: "
+            + ", ".join([f"{cat.capitalize()}: ₹{amt:,.2f}" for cat, amt in budget_plan.items()]) + ". "
+            f"Consider increasing your savings or adjusting your expenses based on your financial goals."
+        )
         return jsonify({
             'success': True,
             'taxable_income': round(taxable_income, 2),
             'tax_amount': round(optimized_tax, 2),
             'effective_rate': round(effective_rate, 2),
             'deductions': round(deductions, 2),
-            'budget_plan': budget_plan  # Based on after-tax, after-deduction income
+            'budget_plan': budget_plan,  # Based on after-tax, after-deduction income
+            'summary': summary
         })
     except Exception as e:
         return jsonify({'error': str(e)})
