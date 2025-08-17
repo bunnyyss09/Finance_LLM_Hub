@@ -99,6 +99,22 @@
         .sentiment-neutral {
             border-left: 4px solid #43e97b;
         }
+        
+        /* Enhanced sentiment label styling */
+        .text-success.fw-bold {
+            color: #28a745 !important;
+            text-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .text-warning.fw-bold {
+            color: #ffc107 !important;
+            text-shadow: 0 0 8px rgba(255, 193, 7, 0.3);
+        }
+        
+        .text-danger.fw-bold {
+            color: #dc3545 !important;
+            text-shadow: 0 0 8px rgba(220, 53, 69, 0.3);
+        }
 
         .sentiment-badge {
             padding: 4px 12px;
@@ -359,15 +375,15 @@
                         <div class="row text-center">
                             <div class="col-4">
                                 <div class="h4 mb-1" id="positive-percent">-</div>
-                                <small class="text-muted">Positive</small>
+                                <small class="text-success fw-bold">Positive</small>
                             </div>
                             <div class="col-4">
                                 <div class="h4 mb-1" id="neutral-percent">-</div>
-                                <small class="text-muted">Neutral</small>
+                                <small class="text-warning fw-bold">Neutral</small>
                             </div>
                             <div class="col-4">
                                 <div class="h4 mb-1" id="negative-percent">-</div>
-                                <small class="text-muted">Negative</small>
+                                <small class="text-danger fw-bold">Negative</small>
                             </div>
                         </div>
                     </div>
@@ -473,19 +489,19 @@
                                 <div class="progress-bar-custom">
                                     <div class="progress-fill progress-positive" style="width: ${data.sentiment_percentages.positive}%"></div>
                                 </div>
-                                <small class="text-muted">Positive</small>
+                                <small class="text-success fw-bold">Positive</small>
                             </div>
                             <div class="col-md-4">
                                 <div class="progress-bar-custom">
                                     <div class="progress-fill progress-neutral" style="width: ${data.sentiment_percentages.neutral}%"></div>
                                 </div>
-                                <small class="text-muted">Neutral</small>
+                                <small class="text-warning fw-bold">Neutral</small>
                             </div>
                             <div class="col-md-4">
                                 <div class="progress-bar-custom">
                                     <div class="progress-fill progress-negative" style="width: ${data.sentiment_percentages.negative}%"></div>
                                 </div>
-                                <small class="text-muted">Negative</small>
+                                <small class="text-danger fw-bold">Negative</small>
                             </div>
                         </div>
                     `;
@@ -683,9 +699,9 @@
                                     <div class="sentiment-indicator" style="left: ${sentimentPosition}%;"></div>
                                 </div>
                                 <div class="d-flex justify-content-between">
-                                    <span>Negative</span>
-                                    <span>Neutral</span>
-                                    <span>Positive</span>
+                                    <span class="text-danger fw-bold">Negative</span>
+                                    <span class="text-warning fw-bold">Neutral</span>
+                                    <span class="text-success fw-bold">Positive</span>
                                 </div>
                             </div>
                         </div>

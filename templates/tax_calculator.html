@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Tax Calculator - FY 2025-26</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #18181A;
+            --bg-gradient: radial-gradient(ellipse at 60% 0%, #23234a 0%, #18181A 80%);
+            --glass-bg: rgba(36, 37, 46, 0.85);
+            --glass-border: rgba(255,255,255,0.10);
+            --primary-gradient: linear-gradient(135deg, #5B86E5 0%, #36D1C4 100%);
+            --accent-gradient: linear-gradient(135deg, #A770EF 0%, #FDB99B 100%);
+            --blue-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --green-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --text-light: #fff;
+            --text-muted: #b0b0b0;
+            --success-color: #28a745;
+            --border-color: rgba(255,255,255,0.10);
+        }
+        body {
+            background: var(--bg-gradient), var(--bg-dark);
+            color: var(--text-light);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .main-container {
+            background: var(--glass-bg);
+            border-radius: 28px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+            border: 1.5px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+            max-width: 1400px;
+        }
+        .section-card {
+            background: var(--glass-bg);
+            border-radius: 18px;
+            padding: 1.8rem;
+            margin: 1.2rem 0;
+            border: 1.2px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.18);
+            backdrop-filter: blur(18px);
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            border-color: rgba(91, 134, 229, 0.3);
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.8rem;
+            color: var(--text-light);
+            text-align: center;
+            text-shadow: 0 0 32px #5B86E5cc, 0 2px 8px #000a;
+        }
+        .back-btn {
+            background: var(--glass-bg);
+            border: 1.2px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 0.7rem 1.5rem;
+            color: var(--text-light);
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            backdrop-filter: blur(18px);
+        }
+        .back-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .form-label {
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1.2px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #5B86E5;
+            box-shadow: 0 0 0 0.2rem rgba(91, 134, 229, 0.25);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-select option {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+        
+        .form-check-input:checked {
+            background-color: #5B86E5;
+            border-color: #5B86E5;
+        }
+        
+        .form-check-label {
+            color: var(--text-light);
+        }
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 14px;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px #5B86E588;
+        }
+        .result-card {
+            background: var(--glass-bg);
+            border-radius: 18px;
+            padding: 1.8rem;
+            margin: 1.2rem 0;
+            border: 1.2px solid var(--glass-border);
+            transition: all 0.3s;
+            backdrop-filter: blur(18px);
+        }
+        .result-card.better {
+            border-color: var(--success-color);
+            box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
+        }
+        .currency {
+            font-weight: bold;
+            color: var(--success-color);
+            font-size: 1.8rem;
+            text-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+        }
+        .breakdown-table {
+            background: var(--glass-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(18px);
+        }
+        
+        /* Override Bootstrap table styles */
+        .breakdown-table .table {
+            background: transparent !important;
+            color: var(--text-light) !important;
+        }
+        
+        .breakdown-table .table th {
+            background: rgba(91, 134, 229, 0.15) !important;
+            color: var(--text-light) !important;
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: 1px solid var(--glass-border) !important;
+            border-color: var(--glass-border) !important;
+        }
+        
+        .breakdown-table .table td {
+            background: transparent !important;
+            color: var(--text-light) !important;
+            padding: 0.75rem 1rem;
+            border-color: var(--glass-border) !important;
+            transition: background 0.2s ease;
+        }
+        
+        .breakdown-table .table tbody tr {
+            background: transparent !important;
+        }
+        
+        .breakdown-table .table tbody tr:hover {
+            background: rgba(91, 134, 229, 0.05) !important;
+        }
+        
+        /* Ensure table borders are visible */
+        .breakdown-table .table {
+            border-color: var(--glass-border) !important;
+        }
+        
+        .breakdown-table .table td,
+        .breakdown-table .table th {
+            border-color: var(--glass-border) !important;
+        }
+        
+        /* Additional table styling for better visibility */
+        .breakdown-table .table-striped > tbody > tr:nth-of-type(odd) > td {
+            background-color: rgba(255, 255, 255, 0.02) !important;
+        }
+        
+        .breakdown-table .table-striped > tbody > tr:nth-of-type(even) > td {
+            background-color: transparent !important;
+        }
+        
+        /* Ensure text is always visible */
+        .breakdown-table .table td,
+        .breakdown-table .table th {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Style for the "No taxable slab income" message */
+        .breakdown-table .text-muted {
+            color: var(--text-muted) !important;
+            font-style: italic;
+        }
+        .recommendation {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--success-color);
+            border-radius: 14px;
+            padding: 1.2rem;
+            margin: 1.2rem 0;
+        }
+        
+        .btn-outline-secondary {
+            background: transparent;
+            border: 1.2px solid var(--glass-border);
+            color: var(--text-light);
+            border-radius: 14px;
+            padding: 0.7rem 1.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="section-title">
+                    <i class="fas fa-calculator me-3"></i>
+                    Indian Tax Calculator — FY 2025–26 (AY 2026–27)
+                </h1>
+                <a href="/" class="back-btn">
+                    <i class="fas fa-arrow-left me-2"></i>Back
+                </a>
+            </div>
+
+            <div class="row">
+                <!-- Inputs Card -->
+                <div class="col-lg-8">
+                    <div class="section-card">
+                        <h2 class="h4 mb-4">Your Details & Income</h2>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="resident" checked>
+                                    <label class="form-check-label" for="resident">
+                                        Resident?
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Age band</label>
+                                <select class="form-select" id="age">
+                                    <option value="<60">&lt;60</option>
+                                    <option value="60-80">60-80</option>
+                                    <option value=">80">&gt;80</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Salary income (Rs.)</label>
+                                <input type="number" class="form-control" id="salaryIncome" value="1800000" step="1000">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Other income (interest/dividends) (Rs.)</label>
+                                <input type="number" class="form-control" id="otherIncome" value="60000" step="1000">
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h5 class="mb-3">Special rate income</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label">STCG @111A (15%) (Rs.)</label>
+                                    <input type="number" class="form-control" id="stcg111A" value="0" step="1000">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">LTCG @112A (10% over Rs. 1L) (Rs.)</label>
+                                    <input type="number" class="form-control" id="ltcg112A" value="0" step="1000">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Other LTCG (Rs.)</label>
+                                    <input type="number" class="form-control" id="otherLTCG112" value="0" step="1000">
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-4">
+                                    <label class="form-label">Other LTCG Rate %</label>
+                                    <input type="number" class="form-control" id="otherLTCG112Rate" value="20" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="section-card">
+                                    <h5 class="mb-3">Old Regime — Deductions</h5>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="oldStdDed" checked>
+                                        <label class="form-check-label" for="oldStdDed">
+                                            Apply standard deduction (Rs. 50,000)
+                                        </label>
+                                    </div>
+                                    <label class="form-label">Section 80C (cap Rs. 1.5L)</label>
+                                    <input type="number" class="form-control" id="ded80C" value="100000" step="1000">
+                                    <label class="form-label">Section 80D — Medical (cap ~Rs. 75k total)</label>
+                                    <input type="number" class="form-control" id="ded80D" value="15000" step="1000">
+                                    <label class="form-label">NPS 80CCD(1B) (cap Rs. 50k)</label>
+                                    <input type="number" class="form-control" id="ded80CCD1B" value="0" step="1000">
+                                    <label class="form-label">Home loan interest (self-occupied, cap Rs. 2L)</label>
+                                    <input type="number" class="form-control" id="housingLoanInterest" value="0" step="1000">
+                                    <label class="form-label">Other deductions (old)</label>
+                                    <input type="number" class="form-control" id="otherDeductionsOld" value="0" step="1000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="section-card">
+                                    <h5 class="mb-3">New Regime — Allowed</h5>
+                                    <p class="text-muted small">Includes standard deduction Rs. 75,000 automatically.</p>
+                                    <label class="form-label">Employer NPS 80CCD(2) (Rs.)</label>
+                                    <input type="number" class="form-control" id="employerNPS80CCD2" value="0" step="1000">
+                                    <label class="form-label">Family pension deduction (cap Rs. 25k)</label>
+                                    <input type="number" class="form-control" id="familyPensionDeduction" value="0" step="1000">
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="text-center mt-4">
+                            <button class="btn btn-primary btn-lg" onclick="calculateTax()">
+                                <i class="fas fa-calculator me-2"></i>Calculate Tax
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Card -->
+                <div class="col-lg-4">
+                    <div class="section-card">
+                        <h2 class="h4 mb-3">Results (Estimate)</h2>
+                        <div id="resultsContainer" style="display: none;">
+                            <div id="newRegimeResult" class="result-card mb-3">
+                                <h5>New Regime</h5>
+                                <div class="text-center">
+                                    <div class="currency" id="newRegimeTotal">Rs. 0</div>
+                                </div>
+                                <div id="newRegimeBreakdown"></div>
+                            </div>
+
+                            <div id="oldRegimeResult" class="result-card mb-3">
+                                <h5>Old Regime</h5>
+                                <div class="text-center">
+                                    <div class="currency" id="oldRegimeTotal">Rs. 0</div>
+                                </div>
+                                <div id="oldRegimeBreakdown"></div>
+                            </div>
+
+                            <div class="recommendation" id="comparisonResult">
+                                <div id="recommendationText"></div>
+                                <div id="taxDifferenceText"></div>
+                            </div>
+
+                            <div class="text-muted small mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                This tool estimates taxes using FY 2025–26 slabs (new regime) and common rules. 
+                                It excludes many edge-cases. For official rules and filing, consult a CA or the Income Tax Department.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakdown Tables -->
+            <div class="mt-5" id="breakdownSection" style="display: none;">
+                <div class="text-center mb-3">
+                    <button class="btn btn-outline-secondary" onclick="toggleBreakdown()">
+                        <span id="breakdownToggleText">Hide</span> slab breakdowns
+                    </button>
+                </div>
+                <div id="breakdownTables" class="row">
+                    <div class="col-md-6">
+                        <div class="section-card">
+                            <h5>New Regime Slab Steps</h5>
+                            <div class="breakdown-table">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Band (Rs.)</th>
+                                            <th>Amount</th>
+                                            <th>Rate</th>
+                                            <th>Tax</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="newRegimeSteps">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="section-card">
+                            <h5>Old Regime Slab Steps</h5>
+                            <div class="breakdown-table">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Band (Rs.)</th>
+                                            <th>Amount</th>
+                                            <th>Rate</th>
+                                            <th>Tax</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="oldRegimeSteps">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Utility functions
+        function formatCurrency(amount) {
+            return 'Rs. ' + amount.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        }
+
+        // Get input values
+        function getInputs() {
+            return {
+                resident: document.getElementById('resident').checked,
+                age: document.getElementById('age').value,
+                salary_income: parseFloat(document.getElementById('salaryIncome').value) || 0,
+                other_income: parseFloat(document.getElementById('otherIncome').value) || 0,
+                stcg_111a: parseFloat(document.getElementById('stcg111A').value) || 0,
+                ltcg_112a: parseFloat(document.getElementById('ltcg112A').value) || 0,
+                other_ltcg_112: parseFloat(document.getElementById('otherLTCG112').value) || 0,
+                other_ltcg_112_rate: parseFloat(document.getElementById('otherLTCG112Rate').value) || 20,
+                old_std_ded: document.getElementById('oldStdDed').checked,
+                ded_80c: parseFloat(document.getElementById('ded80C').value) || 0,
+                ded_80d: parseFloat(document.getElementById('ded80D').value) || 0,
+                ded_80ccd1b: parseFloat(document.getElementById('ded80CCD1B').value) || 0,
+                housing_loan_interest: parseFloat(document.getElementById('housingLoanInterest').value) || 0,
+                other_deductions_old: parseFloat(document.getElementById('otherDeductionsOld').value) || 0,
+                employer_nps_80ccd2: parseFloat(document.getElementById('employerNPS80CCD2').value) || 0,
+                family_pension_deduction: parseFloat(document.getElementById('familyPensionDeduction').value) || 0
+            };
+        }
+
+        // Calculate tax
+        async function calculateTax() {
+            const inputs = getInputs();
+            
+            try {
+                const response = await fetch('/calculate-tax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(inputs)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error calculating tax: ' + error.message);
+            }
+        }
+
+        // Display results
+        function displayResults(result) {
+            // Show results container
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('breakdownSection').style.display = 'block';
+
+            // New Regime
+            document.getElementById('newRegimeTotal').textContent = formatCurrency(result.new_regime.total_tax);
+            document.getElementById('newRegimeBreakdown').innerHTML = `
+                <div class="small">
+                    <div class="d-flex justify-content-between"><span>Normal income (after SD, etc.)</span><span>${formatCurrency(result.new_regime.normal_income)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Slab tax</span><span>${formatCurrency(result.new_regime.slab_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>87A rebate (applied in slab)</span><span>${formatCurrency(result.new_regime.slab_tax - result.new_regime.slab_tax_after_rebate)}</span></div>
+                    <div class="d-flex justify-content-between"><span>STCG @15%</span><span>${formatCurrency(result.new_regime.stcg_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>LTCG Eq @10% (over Rs. 1L)</span><span>${formatCurrency(result.new_regime.ltcg_eq_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Other LTCG</span><span>${formatCurrency(result.new_regime.other_ltcg_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Surcharge</span><span>${formatCurrency(result.new_regime.surcharge)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Cess @4%</span><span>${formatCurrency(result.new_regime.cess)}</span></div>
+                </div>
+            `;
+
+            // Old Regime
+            document.getElementById('oldRegimeTotal').textContent = formatCurrency(result.old_regime.total_tax);
+            document.getElementById('oldRegimeBreakdown').innerHTML = `
+                <div class="small">
+                    <div class="d-flex justify-content-between"><span>Normal income (after deductions)</span><span>${formatCurrency(result.old_regime.normal_income)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Slab tax</span><span>${formatCurrency(result.old_regime.slab_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>87A rebate (if any)</span><span>${formatCurrency(result.old_regime.slab_tax - result.old_regime.slab_tax_after_rebate)}</span></div>
+                    <div class="d-flex justify-content-between"><span>STCG @15%</span><span>${formatCurrency(result.old_regime.stcg_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>LTCG Eq @10% (over Rs. 1L)</span><span>${formatCurrency(result.old_regime.ltcg_eq_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Other LTCG</span><span>${formatCurrency(result.old_regime.other_ltcg_tax)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Surcharge</span><span>${formatCurrency(result.old_regime.surcharge)}</span></div>
+                    <div class="d-flex justify-content-between"><span>Cess @4%</span><span>${formatCurrency(result.old_regime.cess)}</span></div>
+                </div>
+            `;
+
+            // Comparison
+            document.getElementById('recommendationText').innerHTML = `
+                <div class="text-success mb-2">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Recommended regime: ${result.comparison.better_regime.toUpperCase()}</strong>
+                </div>
+            `;
+            document.getElementById('taxDifferenceText').innerHTML = `
+                <div class="small">
+                    Tax difference: ${formatCurrency(result.comparison.tax_difference)} 
+                    ${result.comparison.better_regime === 'new' ? 'saved vs old' : 'saved vs new'}
+                </div>
+            `;
+
+            // Highlight better regime
+            document.getElementById('newRegimeResult').classList.toggle('better', result.comparison.better_regime === 'new');
+            document.getElementById('oldRegimeResult').classList.toggle('better', result.comparison.better_regime === 'old');
+
+
+
+            // Display breakdown tables
+            displayBreakdownTables(result);
+        }
+
+        // Display breakdown tables
+        function displayBreakdownTables(result) {
+            // New Regime Steps
+            const newStepsBody = document.getElementById('newRegimeSteps');
+            newStepsBody.innerHTML = '';
+            
+            if (result.new_regime.steps && result.new_regime.steps.length > 0) {
+                result.new_regime.steps.forEach(step => {
+                    const row = newStepsBody.insertRow();
+                    const upperBand = step.band[1] >= 999999999 ? '∞' : formatNumber(step.band[1]);
+                    row.innerHTML = `
+                        <td>${formatNumber(step.band[0])}–${upperBand}</td>
+                        <td>${formatCurrency(step.amount)}</td>
+                        <td>${step.rate}%</td>
+                        <td>${formatCurrency(step.tax)}</td>
+                    `;
+                });
+            } else {
+                newStepsBody.innerHTML = '<tr><td colspan="4" class="text-center" style="color: var(--text-muted); font-style: italic;">No taxable slab income</td></tr>';
+            }
+
+            // Old Regime Steps
+            const oldStepsBody = document.getElementById('oldRegimeSteps');
+            oldStepsBody.innerHTML = '';
+            
+            if (result.old_regime.steps && result.old_regime.steps.length > 0) {
+                result.old_regime.steps.forEach(step => {
+                    const row = oldStepsBody.insertRow();
+                    const upperBand = step.band[1] >= 999999999 ? '∞' : formatNumber(step.band[1]);
+                    row.innerHTML = `
+                        <td>${formatNumber(step.band[0])}–${upperBand}</td>
+                        <td>${formatCurrency(step.amount)}</td>
+                        <td>${step.rate}%</td>
+                        <td>${formatCurrency(step.tax)}</td>
+                    `;
+                });
+            } else {
+                oldStepsBody.innerHTML = '<tr><td colspan="4" class="text-center" style="color: var(--text-muted); font-style: italic;">No taxable slab income</td></tr>';
+            }
+        }
+
+        // Toggle breakdown visibility
+        function toggleBreakdown() {
+            const breakdownTables = document.getElementById('breakdownTables');
+            const toggleText = document.getElementById('breakdownToggleText');
+            
+            if (breakdownTables.style.display === 'none') {
+                breakdownTables.style.display = 'block';
+                toggleText.textContent = 'Hide';
+            } else {
+                breakdownTables.style.display = 'none';
+                toggleText.textContent = 'Show';
+            }
+        }
+
+        // Auto-calculate on input change
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('change', calculateTax);
+                input.addEventListener('input', calculateTax);
+            });
+        });
+    </script>
+</body>
+</html>
