@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Financial Advisor</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+	<style>
+		:root {
+			--bg-dark: #0f0f23;
+			--bg-card: #1a1a2e;
+			--text-primary: #ffffff;
+			--text-secondary: #b0b0b0;
+			--accent-blue: #4a9eff;
+			--accent-green: #00d4aa;
+			--border-color: #2a2a3e;
+		}
+
+		body {
+			background: var(--bg-dark);
+			color: var(--text-primary);
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			min-height: 100vh;
+		}
+
+		.chat-container {
+			max-width: 800px;
+			margin: 2rem auto;
+			background: var(--bg-card);
+			border-radius: 16px;
+			box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+			border: 1px solid var(--border-color);
+			overflow: hidden;
+		}
+
+		.chat-header {
+			background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+			padding: 1.5rem;
+			text-align: center;
+		}
+
+		.chat-header h1 {
+			margin: 0;
+			font-size: 1.8rem;
+			font-weight: 600;
+		}
+
+		.chat-header p {
+			margin: 0.5rem 0 0 0;
+			opacity: 0.9;
+			font-size: 0.95rem;
+		}
+
+		.chat-messages {
+			height: 500px;
+			overflow-y: auto;
+			padding: 1.5rem;
+			background: var(--bg-card);
+		}
+
+		.message { margin-bottom: 1.5rem; animation: fadeIn 0.3s ease-in; }
+		.message.user { text-align: right; }
+		.message.assistant { text-align: left; }
+		.message-content { display: inline-block; max-width: 80%; padding: 1rem 1.2rem; border-radius: 18px; word-wrap: break-word; }
+		.message.user .message-content { background: linear-gradient(135deg, var(--accent-blue), #3a7bd5); color: white; }
+		.message.assistant .message-content { background: var(--border-color); color: var(--text-primary); border: 1px solid var(--border-color); }
+
+		.chat-input { padding: 1.5rem; background: var(--bg-card); border-top: 1px solid var(--border-color); }
+		.input-group { background: var(--border-color); border-radius: 25px; overflow: hidden; }
+		.form-control { background: transparent; border: none; color: var(--text-primary); padding: 0.8rem 1.2rem; }
+		.form-control:focus { background: transparent; border: none; color: var(--text-primary); box-shadow: none; }
+		.form-control::placeholder { color: var(--text-secondary); }
+		.btn-send { background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); border: none; padding: 0.8rem 1.5rem; color: white; font-weight: 600; transition: all 0.3s ease; }
+		.btn-send:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4); color: white; }
+		.btn-send:disabled { opacity: 0.6; transform: none; }
+
+		@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+		.back-button { position: fixed; top: 2rem; left: 2rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; transition: all 0.3s ease; }
+		.back-button:hover { background: var(--accent-blue); color: white; text-decoration: none; }
+	</style>
+</head>
+<body>
+	<a href="/" class="back-button">
+		<i class="fas fa-arrow-left"></i> Back to Home
+	</a>
+
+	<div class="chat-container">
+		<div class="chat-header">
+			<h1><i class="fas fa-user-tie"></i> Financial Advisor</h1>
+			<p>Concise, practical guidance on portfolios, planning, and risk. Share your goal and timeframe.</p>
+		</div>
+
+		<div class="chat-messages" id="chatMessages">
+			<div class="message assistant">
+				<div class="message-content">
+					Hi, I’m your advisor chatbot. How can I help? For better guidance, include your goal, horizon, and risk tolerance.
+				</div>
+			</div>
+		</div>
+
+		<div class="chat-input">
+			<form id="advisorForm">
+				<div class="input-group">
+					<input type="text" class="form-control" id="queryInput" placeholder="Ask about allocation, rebalancing, or saving for a goal..." required>
+					<button class="btn btn-send" type="submit" id="sendButton">
+						<i class="fas fa-paper-plane"></i>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		$(function () {
+			const chatMessages = $('#chatMessages');
+			const queryInput = $('#queryInput');
+			const sendButton = $('#sendButton');
+			const advisorForm = $('#advisorForm');
+
+			function scrollToBottom() { chatMessages.scrollTop(chatMessages[0].scrollHeight); }
+			function addMessage(content, isUser = false) {
+				const messageDiv = $('<div class="message ' + (isUser ? 'user' : 'assistant') + '"></div>');
+				const messageContent = $('<div class="message-content"></div>').text(String(content));
+				messageDiv.append(messageContent);
+				chatMessages.append(messageDiv);
+				scrollToBottom();
+			}
+
+			advisorForm.on('submit', function (e) {
+				e.preventDefault();
+				const query = queryInput.val().trim();
+				if (!query) return;
+				addMessage(query, true);
+				queryInput.val('');
+				sendButton.prop('disabled', true);
+				queryInput.prop('disabled', true);
+
+				$.ajax({
+					url: '/ask-advisor',
+					method: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({ query: query }),
+					success: function (data) {
+						if (data && data.answer) {
+							addMessage(data.answer, false);
+						} else {
+							addMessage('Sorry, I couldn\'t process your request.', false);
+						}
+					},
+					error: function (xhr) {
+						const errorMsg = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'An error occurred.';
+						addMessage('Error: ' + errorMsg, false);
+					},
+					complete: function () {
+						sendButton.prop('disabled', false);
+						queryInput.prop('disabled', false);
+						queryInput.focus();
+					}
+				});
+			});
+
+			queryInput.focus();
+		});
+	</script>
+</body>
+</html>
+

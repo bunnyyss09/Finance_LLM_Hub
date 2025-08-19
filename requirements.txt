@@ -2,7 +2,7 @@ Flask==2.3.3
 requests==2.31.0
 
 textblob==0.17.1
-yfinance==0.2.18
+yfinance==0.2.64
 sec-edgar-downloader==5.0.3
 matplotlib==3.8.2
 seaborn==0.13.0
@@ -11,3 +11,4 @@ python-docx==0.8.11
 PyPDF2==3.0.1 
 faiss-cpu
 sentence-transformers
+huggingface_hub>=0.23.0

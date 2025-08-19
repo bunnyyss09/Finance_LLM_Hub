@@ -28,7 +28,7 @@ from sklearn.preprocessing import StandardScaler
 import time
 from bs4 import BeautifulSoup
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from finance_agent import ask_finance_agent
+from financial_advisor import ask_financial_advisor
 try:
     import spacy
     nlp = spacy.load('en_core_web_sm')
@@ -1148,21 +1148,21 @@ def optimize_aggressive(returns, cov):
     weights = returns / returns.sum()
     return pd.Series(weights, index=returns.index)
 
-@app.route('/ask-agent', methods=['POST'])
-def ask_agent():
+@app.route('/ask-advisor', methods=['POST'])
+def ask_advisor():
     data = request.get_json()
     query = data.get('query', '')
     if not query:
         return jsonify({'error': 'No query provided'}), 400
     try:
-        answer = ask_finance_agent(query)
+        answer = ask_financial_advisor(query)
         return jsonify({'answer': answer})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/finance-agent')
-def finance_agent():
-    return render_template('finance_agent.html')
+@app.route('/financial-advisor')
+def financial_advisor_page():
+    return render_template('financial_advisor.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000) 
