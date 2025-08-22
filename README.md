@@ -56,8 +56,8 @@ AI-powered financial analysis platform built with Flask, featuring 7 core functi
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/finance_llm_web.git
-   cd finance_llm_web
+   git clone https://github.com/bunnyyss09/Finance_LLM_Hub.git
+   cd Finance_LLM_Hub
    ```
 
 2. **Create virtual environment**
