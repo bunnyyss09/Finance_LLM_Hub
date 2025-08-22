@@ -1,2 +1,33 @@
-__pycache__
-results
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.local
+
+# Virtual environment
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter notebooks (development only)
+*.ipynb
+
+# Model files (too large for git)
+results/fine_tuned_roberta-base/checkpoint-*/
+results/saved_model/model.safetensors
+results/saved_model/vocab.json
+
+# Logs
+*.log

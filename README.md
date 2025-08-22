@@ -1,68 +1,69 @@
-# Finance LLM Hub - AI-Powered Financial Analysis Platform
+# Finance LLM Hub
 
-A comprehensive web application that leverages AI and machine learning to provide advanced financial analysis tools. Built with Flask, featuring 6 core functionalities and modern UI design.
+AI-powered financial analysis platform built with Flask, featuring 7 core functionalities with modern UI design and intelligent financial insights.
 
-## 🚀 Features
+## Features
 
-### 1. **Document Parser**
-- SEC 10-K filing analysis and extraction
-- Key section identification (Business Overview, Risk Factors, Financial Data, Management Discussion)
-- AI-powered summarization of complex financial documents
-- Support for multiple document formats
+### 1. Document Parser & RAG System
+- Upload and analyze financial documents (PDF, DOCX, TXT, HTML)
+- AI-powered document chunking and semantic search using FAISS vector database
+- Sentence-BERT embeddings for context-aware document retrieval
+- Interactive Q&A system for uploaded financial documents
 
-### 2. **Tax Planner**
-- Indian tax calculation (Old Regime)
-- AI-powered deduction optimization recommendations
-- Real-time tax slab analysis
-- Personalized investment suggestions
+### 2. Tax Calculator & Planner
+- Comprehensive Indian tax calculation (Old & New Regime)
+- Age-based tax slab calculations (Under 60, 60-80, 80+)
+- Advanced deduction optimization (80C, 80D, 80CCD1B)
+- Capital gains tax calculations (STCG, LTCG)
 
-### 3. **Live Stock Charts**
-- Real-time stock data from Alpha Vantage API
-- Interactive price and volume charts
-- Company information and metrics
-- 30-day historical data visualization
+### 3. Live Stock Analysis
+- Real-time stock data integration using Yahoo Finance API
+- Interactive price and volume charts with 30-day historical data
+- Company fundamentals and key metrics display
+- AI-generated stock recommendations based on trend analysis
 
-### 4. **Sentiment Analysis**
-- Advanced NLP-based sentiment analysis
-- Key phrase extraction
-- Subjectivity assessment
-- AI-generated insights
+### 4. Advanced Sentiment Analysis
+- Fine-tuned RoBERTa model for financial sentiment classification
+- Real-time financial news sentiment analysis using Finnhub API
+- Key phrase extraction and subjectivity assessment
+- Market impact analysis and trading insights
 
-### 5. **Portfolio Optimizer**
+### 5. Portfolio Optimizer
 - Markowitz Modern Portfolio Theory implementation
-- Risk-adjusted return optimization
-- Multiple risk tolerance levels (Conservative, Moderate, Aggressive)
+- Risk-adjusted return optimization with multiple risk profiles
 - Sharpe ratio calculation and visualization
+- Support for Conservative, Moderate, and Aggressive strategies
 
-### 6. **News Analyzer**
-- Financial news sentiment analysis
-- Entity extraction (companies, currencies, numbers, keywords)
-- Market impact assessment
-- Trading insights generation
+### 6. Financial News Analyzer
+- Automated news sentiment classification
+- Entity extraction (companies, currencies, financial terms)
+- Market impact assessment and trend analysis
+- Integration with financial news APIs
 
-## 🛠️ Installation
+### 7. AI Financial Advisor
+- LLaMA-3-8B powered financial advisory system
+- Personalized investment recommendations
+- Risk assessment and portfolio suggestions
+- Integration with Hugging Face Inference API
+
+## Installation
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.8+
 - pip package manager
 
-### Setup Instructions
+### Setup
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/yourusername/finance_llm_web.git
    cd finance_llm_web
    ```
 
-2. **Create a virtual environment**
+2. **Create virtual environment**
    ```bash
    python -m venv venv
-   
-   # On Windows
-   venv\Scripts\activate
-   
-   # On macOS/Linux
-   source venv/bin/activate
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**
@@ -70,141 +71,73 @@ A comprehensive web application that leverages AI and machine learning to provid
    pip install -r requirements.txt
    ```
 
-4. **Run the application**
+4. **Set up environment variables**
+   Create a `.env` file:
+   ```env
+   FLASK_SECRET_KEY=your-secret-key-here
+   FINNHUB_API_KEY=your-finnhub-api-key
+   HUGGINGFACE_API_TOKEN=your-hf-token
+   FIN_ADVISOR_MODEL_ID=meta-llama/Meta-Llama-3-8B
+   ```
+
+5. **Run the application**
    ```bash
    python app.py
    ```
 
-5. **Access the application**
+6. **Access the application**
    Open your browser and navigate to `http://localhost:5000`
 
-## 📊 API Keys Required
+## API Keys Required
 
-### Alpha Vantage API
-- Get your free API key from [Alpha Vantage](https://www.alphavantage.co/support/#api-key)
-- Update the `ALPHA_VANTAGE_API_KEY` variable in `app.py`
+- **Finnhub API**: Get your free API key from [Finnhub](https://finnhub.io/)
+- **Hugging Face API**: Get your API token from [Hugging Face](https://huggingface.co/settings/tokens)
+- **Yahoo Finance**: No API key required (uses yfinance library)
 
-## 🎯 Usage Examples
-
-### Document Parser
-1. Navigate to `/document-parser`
-2. Enter a stock symbol (e.g., AAPL, MSFT)
-3. Click "Analyze Filing" to get SEC filing insights
-
-### Tax Planner
-1. Go to `/tax-planner`
-2. Enter your annual income and deductions
-3. Get AI-powered tax optimization recommendations
-
-### Stock Charts
-1. Visit `/stock-chart`
-2. Enter a stock symbol
-3. View interactive charts and company data
-
-### Sentiment Analysis
-1. Access `/sentiment-analysis`
-2. Paste any text for sentiment analysis
-3. Get detailed insights and key phrases
-
-### Portfolio Optimizer
-1. Go to `/portfolio-optimizer`
-2. Add multiple stock symbols
-3. Choose risk tolerance level
-4. Get optimized portfolio weights
-
-### News Analyzer
-1. Navigate to `/news-analyzer`
-2. Paste financial news content
-3. Get market impact analysis and trading insights
-
-## 🏗️ Architecture
+## Project Structure
 
 ```
 finance_llm_web/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── README.md             # Project documentation
-├── templates/            # HTML templates
-│   ├── index.html        # Main landing page
+├── app.py                    # Main Flask application
+├── config.py                 # Configuration settings
+├── requirements.txt          # Python dependencies
+├── financial_advisor.py      # AI advisor implementation
+├── routes/                   # Feature-specific routes
+│   ├── core.py              # Main routes
+│   ├── document_parser.py   # RAG system & document analysis
+│   ├── tax.py               # Tax calculations
+│   ├── stocks.py            # Stock data & analysis
+│   ├── sentiment.py         # Sentiment analysis
+│   ├── portfolio.py         # Portfolio optimization
+│   └── advisor.py           # AI financial advisor
+├── templates/               # HTML templates
+│   ├── index.html
 │   ├── document_parser.html
-│   ├── tax_planner.html
+│   ├── tax_calculator.html
 │   ├── stock_chart.html
 │   ├── sentiment_analysis.html
 │   ├── portfolio_optimizer.html
-│   └── news_analyzer.html
-└── notebooks/            # Original Jupyter notebooks
-    ├── chunk_maker.ipynb
-    ├── tax-planner.ipynb
-    └── live_StockChat.ipynb
+│   └── financial_advisor.html
+└── results/                 # Fine-tuned models
+    └── saved_model/         # RoBERTa sentiment model
 ```
 
-## 🔧 Technologies Used
+## Technologies
 
-- **Backend**: Flask, Python
+- **Backend**: Flask, Python 3.8+
+- **AI/ML**: Hugging Face Transformers, Sentence-BERT, FAISS, RoBERTa, TextBlob
+- **Data Sources**: Yahoo Finance (yfinance), Finnhub API, Hugging Face Hub
 - **Frontend**: Bootstrap 5, Chart.js, Font Awesome
-- **AI/ML**: TextBlob, scikit-learn, TensorFlow
-- **Data Sources**: Alpha Vantage API, Yahoo Finance, SEC EDGAR
-- **Visualization**: Matplotlib, Seaborn, Chart.js
+- **Data Processing**: NumPy, Pandas, PyPDF2, python-docx
 
-## 🎨 UI Features
+## Future Enhancements
 
-- Modern gradient backgrounds
-- Responsive design for all devices
-- Interactive charts and visualizations
-- Real-time data updates
-- Loading animations and feedback
-- Sample data for testing
-
-## 🔒 Security Features
-
-- Input validation and sanitization
-- Error handling and user feedback
-- Secure API key management
-- Session management
-
-## 📈 Performance Optimizations
-
-- Efficient data processing
-- Caching for API responses
-- Optimized chart rendering
-- Minimal dependencies
-
-## 🚀 Deployment
-
-### Local Development
-```bash
-python app.py
-```
-
-### Production Deployment
-1. Set up a production WSGI server (Gunicorn)
-2. Configure environment variables
-3. Set up reverse proxy (Nginx)
-4. Enable HTTPS
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Alpha Vantage for financial data API
-- SEC EDGAR for filing data
-- Yahoo Finance for stock information
-- Bootstrap and Chart.js for UI components
-
-## 📞 Support
-
-For questions or support, please open an issue in the repository.
+- [ ] Real-time portfolio tracking
+- [ ] Cryptocurrency analysis integration
+- [ ] Advanced technical indicators
+- [ ] Multi-language support
+- [ ] Mobile app development
 
 ---
 
-**Note**: This is a demonstration project. For production use, ensure proper security measures, API rate limiting, and data validation are implemented. 
+**⚠️ Disclaimer**: This application is for educational and research purposes. Always consult with qualified financial advisors before making investment decisions.
